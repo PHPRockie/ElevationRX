@@ -38,6 +38,8 @@ export function CoachProvider({
     }
 
     let cancelled = false
+    setCoach(null)   // clear stale data from previous user
+    setGym(null)     // clear stale data from previous user
     setLoading(true)
 
     supabase
