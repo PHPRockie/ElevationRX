@@ -27,29 +27,39 @@ export function CoachProvider({
   const [gym, setGym] = useState<Gym | null>(null)
   const [loading, setLoading] = useState(true)
 
+  const userId = session?.user.id ?? null
+
   useEffect(() => {
-    if (!session) {
+    if (!userId) {
       setCoach(null)
       setGym(null)
       setLoading(false)
       return
     }
 
+    let cancelled = false
     setLoading(true)
+
     supabase
       .from('coaches')
       .select('*, gyms(*)')
-      .eq('id', session.user.id)
+      .eq('id', userId)
       .single()
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (cancelled) return
+        if (error && error.code !== 'PGRST116') {
+          console.error('[CoachContext] fetch error', error)
+        }
         if (data) {
-          const { gyms, ...coachData } = data as Coach & { gyms: Gym }
+          const { gyms, ...coachData } = data as Coach & { gyms: Gym | null }
           setCoach(coachData)
           setGym(gyms)
         }
         setLoading(false)
       })
-  }, [session])
+
+    return () => { cancelled = true }
+  }, [userId])
 
   return (
     <CoachContext.Provider value={{ coach, gym, loading }}>
