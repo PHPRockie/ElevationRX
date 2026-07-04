@@ -1,23 +1,30 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { useAuth } from '../hooks/useAuth'
 
 export default function Login() {
   const navigate = useNavigate()
+  const { user, loading: authLoading } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
+  useEffect(() => {
+    if (!authLoading && user) navigate('/dashboard', { replace: true })
+  }, [user, authLoading, navigate])
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
     setLoading(true)
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) {
+    const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
+    if (authError) {
       setError('Invalid email or password')
       setLoading(false)
     } else {
+      setLoading(false)
       navigate('/dashboard')
     }
   }
@@ -29,9 +36,11 @@ export default function Login() {
         <p className="mb-6 text-sm text-slate-400">Coach portal</p>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-600">Email</label>
+            <label htmlFor="login-email" className="mb-1 block text-xs font-semibold text-slate-600">Email</label>
             <input
+              id="login-email"
               type="email"
+              autoComplete="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
@@ -40,9 +49,11 @@ export default function Login() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-600">Password</label>
+            <label htmlFor="login-password" className="mb-1 block text-xs font-semibold text-slate-600">Password</label>
             <input
+              id="login-password"
               type="password"
+              autoComplete="current-password"
               value={password}
               onChange={e => setPassword(e.target.value)}
               required
