@@ -56,6 +56,7 @@ export interface RoutineSkill {
   skill_id: string
   position: number
   sequence_order: number
+  selected_form: 'tuck' | 'pike' | 'straight' | null
   created_at: string
 }
 
