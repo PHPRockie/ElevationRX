@@ -24,7 +24,7 @@ export function useAthletes(): UseAthletesResult {
   const [loading, setLoading] = useState(true)
 
   const fetchAthletes = useCallback(async () => {
-    if (!gym) return
+    if (!gym) { setLoading(false); return }
     setLoading(true)
     const { data } = await supabase
       .from('athletes')
@@ -39,17 +39,20 @@ export function useAthletes(): UseAthletesResult {
 
   async function addAthlete(data: AthleteInput) {
     if (!gym) return
-    await supabase.from('athletes').insert({ ...data, gym_id: gym.id })
+    const { error } = await supabase.from('athletes').insert({ ...data, gym_id: gym.id })
+    if (error) throw error
     await fetchAthletes()
   }
 
   async function updateAthlete(id: string, data: AthleteInput) {
-    await supabase.from('athletes').update(data).eq('id', id)
+    const { error } = await supabase.from('athletes').update(data).eq('id', id)
+    if (error) throw error
     await fetchAthletes()
   }
 
   async function deleteAthlete(id: string) {
-    await supabase.from('athletes').delete().eq('id', id)
+    const { error } = await supabase.from('athletes').delete().eq('id', id)
+    if (error) throw error
     await fetchAthletes()
   }
 
