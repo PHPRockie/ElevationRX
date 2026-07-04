@@ -20,7 +20,11 @@ export default function ProtectedRoute({ children }: { children: ReactNode }) {
             Your account isn't linked to a gym yet — contact your admin.
           </p>
           <button
-            onClick={() => supabase.auth.signOut()}
+            type="button"
+            onClick={async () => {
+              const { error } = await supabase.auth.signOut()
+              if (error) console.error('[ProtectedRoute] sign-out failed', error)
+            }}
             className="mt-4 text-sm text-indigo-600 hover:underline"
           >
             Sign out and try a different account

@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useRoutine } from '../hooks/useRoutine'
 import SkillCatalog from '../components/SkillCatalog'

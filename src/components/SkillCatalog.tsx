@@ -19,6 +19,7 @@ export default function SkillCatalog({ onAdd, full }: Props) {
       <div className="flex-shrink-0 border-b border-slate-200 bg-white p-3">
         <input
           type="text"
+          aria-label="Search skills by name or FIG code"
           placeholder="🔍 Search by name or FIG code…"
           value={search}
           onChange={e => setSearch(e.target.value)}
@@ -29,6 +30,7 @@ export default function SkillCatalog({ onAdd, full }: Props) {
             <button
               key={d}
               type="button"
+              aria-pressed={direction === d}
               onClick={() => setDirection(d)}
               className={`rounded-full px-4 py-1 text-sm font-semibold transition-colors ${
                 direction === d
@@ -52,6 +54,7 @@ export default function SkillCatalog({ onAdd, full }: Props) {
             <button
               key={value}
               type="button"
+              aria-pressed={count === value}
               onClick={() => setCount(value)}
               className={`rounded-full px-3 py-0.5 text-xs font-semibold transition-colors ${
                 count === value

@@ -37,7 +37,7 @@ export function useRoutine(): UseRoutineResult {
   const [saveError, setSaveError] = useState<string | null>(null)
 
   const load = useCallback(async () => {
-    if (!athleteId) return
+    if (!athleteId) { setLoading(false); return }
     setLoadError(null)
     setLoading(true)
     try {
@@ -129,6 +129,8 @@ export function useRoutine(): UseRoutineResult {
       let targetRoutine = routine
 
       if (!targetRoutine) {
+        // routine_number is computed app-side: TOCTOU race possible under concurrent saves.
+        // Acceptable for this app (single-coach usage); a DB sequence/trigger would be the proper fix.
         const { data: existing } = await supabase
           .from('routines')
           .select('id')
@@ -151,10 +153,11 @@ export function useRoutine(): UseRoutineResult {
         targetRoutine = newRoutine
         setRoutine(newRoutine)
       } else {
-        await supabase
+        const { error: tsError } = await supabase
           .from('routines')
           .update({ updated_at: new Date().toISOString() })
           .eq('id', targetRoutine.id)
+        if (tsError) throw tsError
       }
 
       if (!targetRoutine) return

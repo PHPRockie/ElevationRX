@@ -22,11 +22,8 @@ export default function Login() {
     const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
     if (authError) {
       setError('Invalid email or password')
-      setLoading(false)
-    } else {
-      setLoading(false)
-      navigate('/dashboard')
     }
+    setLoading(false)
   }
 
   return (

@@ -29,9 +29,15 @@ export default function EditAthleteModal({ athlete, onSave, onClose }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="edit-athlete-title"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+      onKeyDown={e => e.key === 'Escape' && onClose()}
+    >
       <div className="w-full max-w-sm rounded-lg bg-white p-6 shadow-lg">
-        <h2 className="mb-4 text-base font-bold text-slate-900">Edit athlete</h2>
+        <h2 id="edit-athlete-title" className="mb-4 text-base font-bold text-slate-900">Edit athlete</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
             <label htmlFor="edit-fullname" className="mb-1 block text-xs font-semibold text-slate-600">Full name</label>

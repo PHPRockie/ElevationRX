@@ -26,6 +26,7 @@ export function filterSkills(
     )
   }
 
+  // 'lateral' skills are excluded by design — no DirectionFilter maps to 'lateral'
   const dbDirection = direction === 'front' ? 'forward' : 'backward'
 
   return skills.filter(s => {

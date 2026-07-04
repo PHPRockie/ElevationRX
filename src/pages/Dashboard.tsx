@@ -6,16 +6,17 @@ import Spinner from '../components/Spinner'
 
 export default function Dashboard() {
   const { coach, gym } = useCoach()
-  const { athleteCount, recentAthletes, loading } = useDashboard()
+  const { athleteCount, recentAthletes, loading, error } = useDashboard()
 
   const firstName = coach?.full_name.split(' ')[0] ?? ''
 
   if (loading) return <Spinner />
+  if (error) return <div className="p-6 text-sm text-red-500">{error}</div>
 
   return (
     <div className="h-full overflow-auto p-6">
       <h1 className="mb-1 text-xl font-bold text-slate-900">
-        Welcome back, {firstName} 👋
+        Welcome back, {firstName} <span aria-hidden="true">👋</span>
       </h1>
       <p className="mb-6 text-sm text-slate-400">
         {gym?.name}
@@ -42,7 +43,7 @@ export default function Dashboard() {
                 <Link
                   key={athlete.id}
                   to={`/athletes/${athlete.id}`}
-                  className={`flex items-center justify-between px-4 py-3 text-sm hover:bg-slate-50 ${
+                  className={`flex items-center justify-between px-4 py-3 text-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 ${
                     i < recentAthletes.length - 1 ? 'border-b border-slate-100' : ''
                   }`}
                 >

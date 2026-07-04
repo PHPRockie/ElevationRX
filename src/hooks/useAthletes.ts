@@ -45,13 +45,15 @@ export function useAthletes(): UseAthletesResult {
   }
 
   async function updateAthlete(id: string, data: AthleteInput) {
-    const { error } = await supabase.from('athletes').update(data).eq('id', id)
+    if (!gym) return
+    const { error } = await supabase.from('athletes').update(data).eq('id', id).eq('gym_id', gym.id)
     if (error) throw error
     await fetchAthletes()
   }
 
   async function deleteAthlete(id: string) {
-    const { error } = await supabase.from('athletes').delete().eq('id', id)
+    if (!gym) return
+    const { error } = await supabase.from('athletes').delete().eq('id', id).eq('gym_id', gym.id)
     if (error) throw error
     await fetchAthletes()
   }
