@@ -11,12 +11,19 @@ export default function AddAthleteModal({ onSave, onClose }: Props) {
   const [level, setLevel] = useState('')
   const [country, setCountry] = useState(COUNTRIES[0].code)
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    setError(null)
     setSaving(true)
-    await onSave({ full_name: fullName.trim(), level: level.trim(), country })
-    setSaving(false)
+    try {
+      await onSave({ full_name: fullName.trim(), level: level.trim(), country })
+    } catch {
+      setError('Failed to save. Please try again.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -63,11 +70,13 @@ export default function AddAthleteModal({ onSave, onClose }: Props) {
               ))}
             </select>
           </div>
+          {error && <p className="text-xs text-red-500">{error}</p>}
           <div className="flex gap-2 pt-1">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded border border-slate-200 py-2 text-sm text-slate-600 hover:bg-slate-50"
+              disabled={saving}
+              className="flex-1 rounded border border-slate-200 py-2 text-sm text-slate-600 hover:bg-slate-50 disabled:opacity-50"
             >
               Cancel
             </button>

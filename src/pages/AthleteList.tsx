@@ -44,7 +44,10 @@ export default function AthleteList() {
                   <tr
                     key={athlete.id}
                     onClick={() => navigate(`/athletes/${athlete.id}`)}
-                    className="cursor-pointer hover:bg-slate-50"
+                    onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && navigate(`/athletes/${athlete.id}`)}
+                    tabIndex={0}
+                    role="link"
+                    className="cursor-pointer hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
                   >
                     <td className="px-4 py-3 font-medium text-slate-900">{athlete.full_name}</td>
                     <td className="px-4 py-3 text-slate-500">{athlete.level}</td>
