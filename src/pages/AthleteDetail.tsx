@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useCoach } from '../contexts/CoachContext'
@@ -22,49 +22,65 @@ export default function AthleteDetail() {
   const [athlete, setAthlete] = useState<Athlete | null>(null)
   const [routines, setRoutines] = useState<RoutineSummary[]>([])
   const [loading, setLoading] = useState(true)
+  const [fetchError, setFetchError] = useState<string | null>(null)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
   const [showEdit, setShowEdit] = useState(false)
 
-  async function loadData() {
+  const loadData = useCallback(async () => {
     if (!athleteId) return
-    const [{ data: ath }, { data: routs }] = await Promise.all([
-      supabase.from('athletes').select('*').eq('id', athleteId).single(),
-      supabase
-        .from('routines')
-        .select('*, routine_skills(selected_form, skills(dd_tuck, dd_pike, dd_straight))')
-        .eq('athlete_id', athleteId)
-        .order('routine_number'),
-    ])
-    setAthlete(ath)
-    if (routs) {
-      const summaries: RoutineSummary[] = routs.map((r: any) => {
-        const skillRows = r.routine_skills ?? []
-        const total_dd = skillRows.reduce((sum: number, rs: any) => {
-          const s = rs.skills
-          if (!s) return sum
-          const dd =
-            rs.selected_form === 'tuck' ? s.dd_tuck :
-            rs.selected_form === 'pike' ? s.dd_pike :
-            rs.selected_form === 'straight' ? s.dd_straight : null
-          return sum + (dd ?? 0)
-        }, 0)
-        const { routine_skills: _, ...routine } = r
-        return { ...routine, skill_count: skillRows.length, total_dd }
-      })
-      setRoutines(summaries)
+    setFetchError(null)
+    setLoading(true)
+    try {
+      const [{ data: ath, error: athError }, { data: routs, error: routsError }] = await Promise.all([
+        supabase.from('athletes').select('*').eq('id', athleteId).single(),
+        supabase
+          .from('routines')
+          .select('*, routine_skills(selected_form, skills(dd_tuck, dd_pike, dd_straight))')
+          .eq('athlete_id', athleteId)
+          .order('routine_number'),
+      ])
+      if (athError) { setFetchError('Failed to load athlete.'); return }
+      setAthlete(ath)
+      if (routs && !routsError) {
+        const summaries: RoutineSummary[] = routs.map((r: any) => {
+          const skillRows = r.routine_skills ?? []
+          const total_dd = skillRows.reduce((sum: number, rs: any) => {
+            const s = rs.skills
+            if (!s) return sum
+            const dd =
+              rs.selected_form === 'tuck' ? s.dd_tuck :
+              rs.selected_form === 'pike' ? s.dd_pike :
+              rs.selected_form === 'straight' ? s.dd_straight : null
+            return sum + (dd ?? 0)
+          }, 0)
+          const { routine_skills: _, ...routine } = r
+          return { ...routine, skill_count: skillRows.length, total_dd }
+        })
+        setRoutines(summaries)
+      }
+    } catch {
+      setFetchError('Failed to load data.')
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
-  }
+  }, [athleteId])
 
-  useEffect(() => { loadData() }, [athleteId])
+  useEffect(() => { loadData() }, [loadData])
 
   async function handleDelete() {
     if (!athlete) return
     if (!window.confirm(`Delete ${athlete.full_name}? This cannot be undone.`)) return
-    await deleteAthlete(athlete.id)
-    navigate('/athletes')
+    setDeleteError(null)
+    try {
+      await deleteAthlete(athlete.id)
+      navigate('/athletes')
+    } catch {
+      setDeleteError('Failed to delete athlete. Please try again.')
+    }
   }
 
   if (loading) return <Spinner />
+  if (fetchError) return <div className="p-6 text-sm text-red-500">{fetchError}</div>
   if (!athlete) return <div className="p-6 text-sm text-slate-500">Athlete not found.</div>
 
   const country = countryByCode(athlete.country)
@@ -74,6 +90,8 @@ export default function AthleteDetail() {
       <Link to="/athletes" className="mb-4 inline-flex items-center gap-1 text-sm text-indigo-600 hover:underline">
         ← Athletes
       </Link>
+
+      {deleteError && <p className="mb-4 text-xs text-red-500">{deleteError}</p>}
 
       <div className="mb-6 flex items-start justify-between">
         <div>
