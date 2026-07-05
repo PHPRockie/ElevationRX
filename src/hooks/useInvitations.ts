@@ -34,7 +34,27 @@ export function useInvitations(): UseInvitationsResult {
     setLoading(false)
   }, [gym])
 
-  useEffect(() => { fetchInvitations() }, [fetchInvitations])
+  useEffect(() => {
+    let cancelled = false
+    if (!gym) { setLoading(false); return }
+    setLoading(true)
+    setError(null)
+    supabase
+      .from('invitations')
+      .select('*')
+      .eq('gym_id', gym.id)
+      .order('created_at', { ascending: false })
+      .then(({ data, error: fetchError }) => {
+        if (cancelled) return
+        if (fetchError) {
+          setError('Failed to load invitations.')
+        } else {
+          setInvitations(data ?? [])
+        }
+        setLoading(false)
+      })
+    return () => { cancelled = true }
+  }, [gym])
 
   async function createInvitation(email: string, fullName: string): Promise<Invitation> {
     if (!gym || !coach) throw new Error('Not authenticated')
