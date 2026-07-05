@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useCoach } from '../contexts/CoachContext'
 import { useInvitations } from '../hooks/useInvitations'
@@ -8,18 +8,13 @@ import Spinner from '../components/Spinner'
 import type { Coach } from '../types/database'
 
 export default function Settings() {
-  const navigate = useNavigate()
-  const { coach, gym } = useCoach()
+  const { coach, gym, loading: authLoading } = useCoach()
   const { invitations, loading: invLoading, error: invError, createInvitation, revokeInvitation } = useInvitations()
 
   const [coaches, setCoaches] = useState<Coach[]>([])
   const [coachesLoading, setCoachesLoading] = useState(true)
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [revokeError, setRevokeError] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (coach && coach.role !== 'admin') navigate('/dashboard', { replace: true })
-  }, [coach, navigate])
 
   useEffect(() => {
     if (!gym) return
@@ -42,6 +37,9 @@ export default function Settings() {
       setRevokeError('Failed to revoke invitation. Please try again.')
     }
   }
+
+  if (authLoading) return <Spinner />
+  if (!coach || coach.role !== 'admin') return <Navigate to="/dashboard" replace />
 
   if (coachesLoading) return <Spinner />
 
