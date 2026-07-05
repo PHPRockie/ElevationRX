@@ -9,7 +9,6 @@ export default function Setup() {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const [checking, setChecking] = useState(true)
-  const [alreadyConfigured, setAlreadyConfigured] = useState(false)
 
   const [gymName, setGymName] = useState('')
   const [country, setCountry] = useState('USA')
@@ -21,18 +20,14 @@ export default function Setup() {
 
   useEffect(() => {
     let cancelled = false
-    supabase
-      .from('gyms')
-      .select('id', { count: 'exact', head: true })
-      .then(({ count }) => {
-        if (cancelled) return
-        if (count && count > 0) {
-          setAlreadyConfigured(true)
-          setChecking(false)
-        } else {
-          setChecking(false)
-        }
-      })
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (cancelled) return
+      if (session) {
+        navigate('/dashboard', { replace: true })
+      } else {
+        setChecking(false)
+      }
+    })
     return () => { cancelled = true }
   }, [navigate])
 
@@ -81,26 +76,6 @@ export default function Setup() {
   }
 
   if (checking) return <Spinner />
-
-  if (alreadyConfigured) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-surface px-4">
-        <div className="w-full max-w-sm rounded-lg bg-card p-8 text-center shadow">
-          <h1 className="mb-1 text-xl font-extrabold text-violet-100">ElevationRx</h1>
-          <p className="mb-2 mt-4 font-semibold text-orange-400">Already configured</p>
-          <p className="mb-6 text-sm text-violet-400">
-            A gym is already set up on this app. Sign in with your coach account instead.
-          </p>
-          <a
-            href="/login"
-            className="inline-block rounded bg-orange-500 px-5 py-2 text-sm font-semibold text-white hover:bg-orange-600"
-          >
-            Go to sign in
-          </a>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-surface px-4">
