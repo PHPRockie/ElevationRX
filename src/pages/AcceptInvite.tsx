@@ -24,12 +24,14 @@ export default function AcceptInvite() {
       return
     }
 
+    let cancelled = false
     supabase
       .from('invitations')
       .select('*')
       .eq('token', token)
       .single()
       .then(({ data, error }) => {
+        if (cancelled) return
         setLookupLoading(false)
         if (error || !data) { setLookupError('Invalid invite link.'); return }
         if (data.status === 'accepted') { setLookupError('This invite has already been used — try signing in.'); return }
@@ -38,11 +40,12 @@ export default function AcceptInvite() {
         setInvitation(data)
         setFullName(data.full_name)
       })
+    return () => { cancelled = true }
   }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!invitation) return
+    if (!invitation || saving) return
     setSubmitError(null)
     setSaving(true)
     try {
@@ -59,8 +62,8 @@ export default function AcceptInvite() {
         )
         return
       }
-      if (!authData.user) {
-        setSubmitError('Account creation failed. Please try again.')
+      if (!authData.user || !authData.session) {
+        setSubmitError('Account creation failed — email confirmation may be enabled. Contact your admin.')
         return
       }
 
@@ -75,10 +78,14 @@ export default function AcceptInvite() {
         return
       }
 
-      await supabase
+      const { error: acceptError } = await supabase
         .from('invitations')
         .update({ status: 'accepted' })
         .eq('id', invitation.id)
+      if (acceptError) {
+        setSubmitError('Account created but invite could not be marked used. Contact your admin.')
+        return
+      }
 
       navigate('/dashboard', { replace: true })
     } finally {
