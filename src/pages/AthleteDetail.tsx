@@ -86,14 +86,15 @@ export default function AthleteDetail() {
   const country = countryByCode(athlete.country)
 
   return (
-    <div className="h-full overflow-auto p-6">
+    <div className="h-full overflow-auto p-4 md:p-6">
       <Link to="/athletes" className="mb-4 inline-flex items-center gap-1 text-sm text-orange-500 hover:underline">
         ← Athletes
       </Link>
 
       {deleteError && <p className="mb-4 text-xs text-red-500">{deleteError}</p>}
 
-      <div className="mb-6 flex items-start justify-between">
+      {/* Header — stacks on mobile, side-by-side on desktop */}
+      <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
           <h1 className="text-xl font-bold text-violet-100">{athlete.full_name}</h1>
           <p className="text-sm text-violet-400">
@@ -102,7 +103,7 @@ export default function AthleteDetail() {
             {gym && ` · ${gym.name}`}
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button
             type="button"
             onClick={() => setShowEdit(true)}
@@ -113,7 +114,7 @@ export default function AthleteDetail() {
           <button
             type="button"
             onClick={handleDelete}
-            className="rounded border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50"
+            className="rounded border border-red-900 px-3 py-1.5 text-sm text-red-500 hover:bg-red-900/20"
           >
             Delete
           </button>
@@ -131,33 +132,54 @@ export default function AthleteDetail() {
       {routines.length === 0 ? (
         <p className="text-sm text-violet-400">No routines yet. Create one above.</p>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-border bg-card">
-          <table className="w-full text-sm">
-            <thead className="bg-[#1a1728] text-xs font-semibold uppercase text-violet-400">
-              <tr>
-                <th className="px-4 py-3 text-left">Routine</th>
-                <th className="px-4 py-3 text-left">Skills</th>
-                <th className="px-4 py-3 text-left">Total DD</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {routines.map(r => (
-                <tr
-                  key={r.id}
-                  onClick={() => navigate(`/athletes/${athlete.id}/routines/${r.id}`)}
-                  onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && navigate(`/athletes/${athlete.id}/routines/${r.id}`)}
-                  tabIndex={0}
-                  role="link"
-                  className="cursor-pointer hover:bg-[#1a1728] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-orange-500"
-                >
-                  <td className="px-4 py-3 font-medium text-violet-100">Routine #{r.routine_number}</td>
-                  <td className="px-4 py-3 text-violet-400">{r.skill_count} / 10</td>
-                  <td className="px-4 py-3 font-semibold text-orange-500">{r.total_dd.toFixed(1)}</td>
+        <>
+          {/* Mobile card list */}
+          <div className="flex flex-col gap-2 md:hidden">
+            {routines.map(r => (
+              <button
+                key={r.id}
+                type="button"
+                onClick={() => navigate(`/athletes/${athlete.id}/routines/${r.id}`)}
+                className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3 text-left hover:bg-[#1a1728] focus:outline-none focus:ring-2 focus:ring-orange-500"
+              >
+                <div>
+                  <p className="font-medium text-violet-100">Routine #{r.routine_number}</p>
+                  <p className="text-xs text-violet-400">{r.skill_count} / 10 skills</p>
+                </div>
+                <span className="text-sm font-bold text-orange-500">DD {r.total_dd.toFixed(1)}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Desktop table */}
+          <div className="hidden overflow-hidden rounded-lg border border-border bg-card md:block">
+            <table className="w-full text-sm">
+              <thead className="bg-[#1a1728] text-xs font-semibold uppercase text-violet-400">
+                <tr>
+                  <th className="px-4 py-3 text-left">Routine</th>
+                  <th className="px-4 py-3 text-left">Skills</th>
+                  <th className="px-4 py-3 text-left">Total DD</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {routines.map(r => (
+                  <tr
+                    key={r.id}
+                    onClick={() => navigate(`/athletes/${athlete.id}/routines/${r.id}`)}
+                    onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && navigate(`/athletes/${athlete.id}/routines/${r.id}`)}
+                    tabIndex={0}
+                    role="link"
+                    className="cursor-pointer hover:bg-[#1a1728] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-orange-500"
+                  >
+                    <td className="px-4 py-3 font-medium text-violet-100">Routine #{r.routine_number}</td>
+                    <td className="px-4 py-3 text-violet-400">{r.skill_count} / 10</td>
+                    <td className="px-4 py-3 font-semibold text-orange-500">{r.total_dd.toFixed(1)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
 
       {showEdit && (

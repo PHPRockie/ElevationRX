@@ -10,6 +10,11 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     isActive ? 'bg-orange-500 text-white' : 'text-zinc-500 hover:text-zinc-200'
   }`
 
+const bottomNavClass = ({ isActive }: { isActive: boolean }) =>
+  `flex flex-1 flex-col items-center justify-center gap-0.5 py-2 text-xs font-semibold transition-colors ${
+    isActive ? 'text-orange-400' : 'text-zinc-500'
+  }`
+
 export default function AppLayout() {
   const { coach, gym } = useCoach()
   const { t } = useTranslation()
@@ -27,7 +32,8 @@ export default function AppLayout() {
 
   return (
     <div className="flex h-screen bg-surface">
-      <aside className="flex w-48 flex-shrink-0 flex-col bg-sidebar px-3 py-4">
+      {/* Desktop sidebar */}
+      <aside className="hidden w-48 flex-shrink-0 flex-col bg-sidebar px-3 py-4 md:flex">
         <div className="mb-1 text-sm font-extrabold text-white">ElevationRx</div>
         {gym && (
           <span className="mb-5 w-fit rounded bg-zinc-800 px-2 py-0.5 text-xs text-orange-400">
@@ -68,10 +74,40 @@ export default function AppLayout() {
           </button>
         </div>
       </aside>
-      {/* overflow-hidden is intentional: each page manages its own scroll container */}
-      <main className="flex-1 overflow-hidden">
+
+      {/* Main content — pb-16 leaves room for mobile bottom nav */}
+      <main className="flex-1 overflow-hidden pb-16 md:pb-0">
         <Outlet />
       </main>
+
+      {/* Mobile bottom nav */}
+      <nav
+        aria-label="Main navigation"
+        className="fixed bottom-0 left-0 right-0 z-40 flex border-t border-border bg-sidebar md:hidden"
+      >
+        <NavLink to="/dashboard" className={bottomNavClass}>
+          <span className="text-lg" aria-hidden="true">📊</span>
+          <span>{t('nav.dashboard')}</span>
+        </NavLink>
+        <NavLink to="/athletes" className={bottomNavClass}>
+          <span className="text-lg" aria-hidden="true">🏃</span>
+          <span>{t('nav.athletes')}</span>
+        </NavLink>
+        {coach?.role === 'admin' && (
+          <NavLink to="/settings" className={bottomNavClass}>
+            <span className="text-lg" aria-hidden="true">⚙</span>
+            <span>{t('nav.settings')}</span>
+          </NavLink>
+        )}
+        <button
+          type="button"
+          onClick={handleSignOut}
+          className="flex flex-1 flex-col items-center justify-center gap-0.5 py-2 text-xs font-semibold text-zinc-500"
+        >
+          <span className="text-lg" aria-hidden="true">🚪</span>
+          <span>{t('nav.signOut')}</span>
+        </button>
+      </nav>
     </div>
   )
 }

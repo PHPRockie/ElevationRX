@@ -16,16 +16,16 @@ export default function Dashboard() {
   if (error) return <div className="p-6 text-sm text-red-500">{error}</div>
 
   return (
-    <div className="h-full overflow-auto p-6">
-      <h1 className="mb-1 text-xl font-bold text-violet-100">
+    <div className="h-full overflow-auto p-4 md:p-6">
+      <h1 className="mb-1 text-lg font-bold text-violet-100 md:text-xl">
         {t('dashboard.welcome', { name: firstName })} <span aria-hidden="true">👋</span>
       </h1>
-      <p className="mb-6 text-sm text-violet-400">
+      <p className="mb-5 text-sm text-violet-400">
         {gym?.name}
         {gym?.country ? ` · ${gym.country}` : ''}
       </p>
 
-      <div className="mb-6 w-40 rounded-lg border border-border bg-card p-4">
+      <div className="mb-6 w-36 rounded-lg border border-border bg-card p-4 md:w-40">
         <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-violet-400">
           {t('dashboard.athletes')}
         </p>

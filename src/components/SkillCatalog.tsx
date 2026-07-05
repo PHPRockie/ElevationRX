@@ -15,7 +15,7 @@ export default function SkillCatalog({ onAdd, full }: Props) {
   const { filtered, loading } = useSkills(direction, count, search)
 
   return (
-    <div className="flex h-full flex-col border-r border-border bg-card" style={{ width: 280, minWidth: 280 }}>
+    <div className="flex h-full w-full flex-col border-r border-border bg-card md:w-[280px] md:min-w-[280px]">
       <div className="flex-shrink-0 border-b border-border bg-card p-3">
         <input
           type="text"

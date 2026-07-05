@@ -38,7 +38,7 @@ export default function EditAthleteModal({ athlete, onSave, onClose }: Props) {
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
       onKeyDown={e => e.key === 'Escape' && onClose()}
     >
-      <div className="w-full max-w-sm rounded-lg bg-card p-6 shadow-lg">
+      <div className="mx-4 w-full max-w-sm rounded-lg bg-card p-6 shadow-lg">
         <h2 id="edit-athlete-title" className="mb-4 text-base font-bold text-violet-100">
           {t('editAthleteModal.title')}
         </h2>
