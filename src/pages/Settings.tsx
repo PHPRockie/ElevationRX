@@ -13,20 +13,27 @@ export default function Settings() {
 
   const [coaches, setCoaches] = useState<Coach[]>([])
   const [coachesLoading, setCoachesLoading] = useState(true)
+  const [coachesError, setCoachesError] = useState<string | null>(null)
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [revokeError, setRevokeError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!gym) return
+    if (!gym) { setCoachesLoading(false); return }
+    let cancelled = false
+    setCoachesLoading(true)
+    setCoachesError(null)
     supabase
       .from('coaches')
       .select('*')
       .eq('gym_id', gym.id)
       .order('full_name')
-      .then(({ data }) => {
-        setCoaches(data ?? [])
+      .then(({ data, error }) => {
+        if (cancelled) return
+        if (error) setCoachesError('Failed to load team.')
+        else setCoaches(data ?? [])
         setCoachesLoading(false)
       })
+    return () => { cancelled = true }
   }, [gym])
 
   async function handleRevoke(id: string) {
@@ -50,6 +57,7 @@ export default function Settings() {
       {/* Team */}
       <section className="mb-8">
         <h2 className="mb-3 text-sm font-bold text-slate-700">Team</h2>
+        {coachesError && <p className="mb-2 text-xs text-red-500">{coachesError}</p>}
         <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
           <table className="w-full text-sm">
             <thead className="bg-slate-50 text-xs font-semibold uppercase text-slate-500">
