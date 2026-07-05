@@ -57,15 +57,15 @@ export default function InviteCoachModal({ onCreate, onClose }: Props) {
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
       onKeyDown={e => e.key === 'Escape' && onClose()}
     >
-      <div className="w-full max-w-sm rounded-lg bg-white p-6 shadow-lg">
+      <div className="w-full max-w-sm rounded-lg bg-card p-6 shadow-lg">
         {!createdInvite ? (
           <>
-            <h2 id="invite-coach-title" className="mb-4 text-base font-bold text-slate-900">
+            <h2 id="invite-coach-title" className="mb-4 text-base font-bold text-violet-100">
               Invite coach
             </h2>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <div>
-                <label htmlFor="invite-email" className="mb-1 block text-xs font-semibold text-slate-600">
+                <label htmlFor="invite-email" className="mb-1 block text-xs font-semibold text-violet-300">
                   Email
                 </label>
                 <input
@@ -75,12 +75,12 @@ export default function InviteCoachModal({ onCreate, onClose }: Props) {
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   required
-                  className="w-full rounded border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500"
+                  className="w-full rounded border border-border bg-[#1a1728] px-3 py-2 text-sm outline-none focus:border-orange-500"
                   placeholder="coach@example.com"
                 />
               </div>
               <div>
-                <label htmlFor="invite-name" className="mb-1 block text-xs font-semibold text-slate-600">
+                <label htmlFor="invite-name" className="mb-1 block text-xs font-semibold text-violet-300">
                   Full name
                 </label>
                 <input
@@ -89,7 +89,7 @@ export default function InviteCoachModal({ onCreate, onClose }: Props) {
                   value={fullName}
                   onChange={e => setFullName(e.target.value)}
                   required
-                  className="w-full rounded border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-500"
+                  className="w-full rounded border border-border bg-[#1a1728] px-3 py-2 text-sm outline-none focus:border-orange-500"
                   placeholder="Jane Smith"
                 />
               </div>
@@ -99,14 +99,14 @@ export default function InviteCoachModal({ onCreate, onClose }: Props) {
                   type="button"
                   onClick={onClose}
                   disabled={saving}
-                  className="flex-1 rounded border border-slate-200 py-2 text-sm text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+                  className="flex-1 rounded border border-border py-2 text-sm text-violet-300 hover:bg-[#1a1728] disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex-1 rounded bg-indigo-600 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+                  className="flex-1 rounded bg-orange-500 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-50"
                 >
                   {saving ? 'Creating…' : 'Create invite'}
                 </button>
@@ -115,28 +115,28 @@ export default function InviteCoachModal({ onCreate, onClose }: Props) {
           </>
         ) : (
           <>
-            <h2 id="invite-coach-title" className="mb-2 text-base font-bold text-slate-900">
+            <h2 id="invite-coach-title" className="mb-2 text-base font-bold text-violet-100">
               Invite created
             </h2>
-            <p className="mb-3 text-sm text-slate-500">
+            <p className="mb-3 text-sm text-violet-400">
               Share this link with {createdInvite.full_name}:
             </p>
-            <div className="mb-4 rounded border border-slate-200 bg-slate-50 px-3 py-2">
-              <span className="break-all font-mono text-xs text-slate-700">{inviteUrl}</span>
+            <div className="mb-4 rounded border border-border bg-[#1a1728] px-3 py-2">
+              <span className="break-all font-mono text-xs text-violet-300">{inviteUrl}</span>
             </div>
             <div className="flex gap-2">
               <button
                 type="button"
                 aria-live="polite"
                 onClick={handleCopy}
-                className="flex-1 rounded border border-slate-200 py-2 text-sm text-slate-600 hover:bg-slate-50"
+                className="flex-1 rounded border border-border py-2 text-sm text-violet-300 hover:bg-[#1a1728]"
               >
                 {copied ? '✓ Copied!' : 'Copy link'}
               </button>
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 rounded bg-indigo-600 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+                className="flex-1 rounded bg-orange-500 py-2 text-sm font-semibold text-white hover:bg-orange-600"
               >
                 Done
               </button>

@@ -81,13 +81,13 @@ export default function AthleteDetail() {
 
   if (loading) return <Spinner />
   if (fetchError) return <div className="p-6 text-sm text-red-500">{fetchError}</div>
-  if (!athlete) return <div className="p-6 text-sm text-slate-500">Athlete not found.</div>
+  if (!athlete) return <div className="p-6 text-sm text-violet-400">Athlete not found.</div>
 
   const country = countryByCode(athlete.country)
 
   return (
     <div className="h-full overflow-auto p-6">
-      <Link to="/athletes" className="mb-4 inline-flex items-center gap-1 text-sm text-indigo-600 hover:underline">
+      <Link to="/athletes" className="mb-4 inline-flex items-center gap-1 text-sm text-orange-500 hover:underline">
         ← Athletes
       </Link>
 
@@ -95,8 +95,8 @@ export default function AthleteDetail() {
 
       <div className="mb-6 flex items-start justify-between">
         <div>
-          <h1 className="text-xl font-bold text-slate-900">{athlete.full_name}</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-xl font-bold text-violet-100">{athlete.full_name}</h1>
+          <p className="text-sm text-violet-400">
             {athlete.level}
             {country && ` · ${country.flag} ${country.name}`}
             {gym && ` · ${gym.name}`}
@@ -106,7 +106,7 @@ export default function AthleteDetail() {
           <button
             type="button"
             onClick={() => setShowEdit(true)}
-            className="rounded border border-slate-200 px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-50"
+            className="rounded border border-border px-3 py-1.5 text-sm text-violet-300 hover:bg-[#1a1728]"
           >
             Edit
           </button>
@@ -120,27 +120,27 @@ export default function AthleteDetail() {
           <button
             type="button"
             onClick={() => navigate(`/athletes/${athlete.id}/routines/new`)}
-            className="rounded bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-700"
+            className="rounded bg-orange-500 px-3 py-1.5 text-sm font-semibold text-white hover:bg-orange-600"
           >
             + New routine
           </button>
         </div>
       </div>
 
-      <h2 className="mb-3 text-sm font-bold text-slate-700">Routines</h2>
+      <h2 className="mb-3 text-sm font-bold text-violet-300">Routines</h2>
       {routines.length === 0 ? (
-        <p className="text-sm text-slate-400">No routines yet. Create one above.</p>
+        <p className="text-sm text-violet-400">No routines yet. Create one above.</p>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+        <div className="overflow-hidden rounded-lg border border-border bg-card">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-xs font-semibold uppercase text-slate-500">
+            <thead className="bg-[#1a1728] text-xs font-semibold uppercase text-violet-400">
               <tr>
                 <th className="px-4 py-3 text-left">Routine</th>
                 <th className="px-4 py-3 text-left">Skills</th>
                 <th className="px-4 py-3 text-left">Total DD</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-border">
               {routines.map(r => (
                 <tr
                   key={r.id}
@@ -148,11 +148,11 @@ export default function AthleteDetail() {
                   onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && navigate(`/athletes/${athlete.id}/routines/${r.id}`)}
                   tabIndex={0}
                   role="link"
-                  className="cursor-pointer hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+                  className="cursor-pointer hover:bg-[#1a1728] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-orange-500"
                 >
-                  <td className="px-4 py-3 font-medium text-slate-900">Routine #{r.routine_number}</td>
-                  <td className="px-4 py-3 text-slate-500">{r.skill_count} / 10</td>
-                  <td className="px-4 py-3 font-semibold text-indigo-700">{r.total_dd.toFixed(1)}</td>
+                  <td className="px-4 py-3 font-medium text-violet-100">Routine #{r.routine_number}</td>
+                  <td className="px-4 py-3 text-violet-400">{r.skill_count} / 10</td>
+                  <td className="px-4 py-3 font-semibold text-orange-500">{r.total_dd.toFixed(1)}</td>
                 </tr>
               ))}
             </tbody>

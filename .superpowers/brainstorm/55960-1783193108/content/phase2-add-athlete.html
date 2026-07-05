@@ -1,0 +1,64 @@
+<h2>Phase 2 — Add Athlete</h2>
+<p class="subtitle">The coach manually fills in all details. Country is always set explicitly — not assumed from the gym.</p>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">Athlete list with "Add athlete" button</div>
+    <div class="mockup-body" style="background:#f8fafc;padding:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <div style="font-weight:700;font-size:0.95rem;color:#1e293b;">Athletes <span style="font-weight:400;color:#94a3b8;font-size:0.8rem;">(4)</span></div>
+        <div style="background:#4f46e5;color:white;border-radius:6px;padding:7px 14px;font-size:0.78rem;font-weight:600;cursor:pointer;">+ Add athlete</div>
+      </div>
+      <div style="background:white;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;">
+        <div style="display:grid;grid-template-columns:1fr 80px 80px 90px;padding:8px 14px;background:#f1f5f9;font-size:0.7rem;font-weight:600;color:#64748b;text-transform:uppercase;gap:8px;">
+          <div>Name</div><div>Level</div><div>Country</div><div>Routines</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 80px 80px 90px;padding:10px 14px;border-top:1px solid #f1f5f9;font-size:0.8rem;color:#1e293b;gap:8px;align-items:center;">
+          <div style="font-weight:500;">Ana González</div><div>Elite</div><div>🇲🇽 MEX</div>
+          <div><span style="background:#ede9fe;color:#5b21b6;border-radius:4px;padding:2px 8px;font-size:0.72rem;">2 routines</span></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 80px 80px 90px;padding:10px 14px;border-top:1px solid #f1f5f9;font-size:0.8rem;color:#1e293b;gap:8px;align-items:center;background:#fafafa;">
+          <div style="font-weight:500;">Jake Thompson</div><div>Elite</div><div>🇺🇸 USA</div>
+          <div><span style="background:#ede9fe;color:#5b21b6;border-radius:4px;padding:2px 8px;font-size:0.72rem;">3 routines</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">Add Athlete modal — all fields manual</div>
+    <div class="mockup-body" style="background:#f8fafc;display:flex;align-items:center;justify-content:center;">
+      <div style="background:white;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.12);padding:24px;width:280px;">
+        <div style="font-weight:700;font-size:0.95rem;color:#1e293b;margin-bottom:18px;">Add athlete</div>
+
+        <div style="font-size:0.72rem;font-weight:600;color:#475569;margin-bottom:4px;">Full name</div>
+        <div style="border:1px solid #e2e8f0;border-radius:6px;padding:8px 10px;font-size:0.8rem;color:#94a3b8;margin-bottom:12px;">Sofia Herrera</div>
+
+        <div style="font-size:0.72rem;font-weight:600;color:#475569;margin-bottom:4px;">Level</div>
+        <div style="border:1px solid #e2e8f0;border-radius:6px;padding:8px 10px;font-size:0.8rem;color:#94a3b8;margin-bottom:12px;">e.g. Elite, Junior, Age Group...</div>
+
+        <div style="font-size:0.72rem;font-weight:600;color:#475569;margin-bottom:4px;">Country <span style="font-weight:400;color:#94a3b8;">(federation)</span></div>
+        <div style="border:1px solid #4f46e5;border-radius:6px;padding:8px 10px;font-size:0.8rem;color:#1e293b;margin-bottom:20px;display:flex;justify-content:space-between;">
+          <span>🇲🇽 Mexico (MEX)</span><span style="color:#94a3b8;">▾</span>
+        </div>
+
+        <div style="display:flex;gap:8px;">
+          <div style="flex:1;border:1px solid #e2e8f0;color:#475569;border-radius:6px;padding:8px;text-align:center;font-size:0.78rem;cursor:pointer;">Cancel</div>
+          <div style="flex:1;background:#4f46e5;color:white;border-radius:6px;padding:8px;text-align:center;font-size:0.78rem;font-weight:600;cursor:pointer;">Save</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:18px;font-size:0.83rem;color:#475569;line-height:1.7;">
+  <strong>Rules:</strong>
+  <ul style="padding-left:18px;margin-top:6px;">
+    <li>Athletes are always linked to the coach's gym (<code>gym_id</code> set automatically)</li>
+    <li>Country is a manual dropdown — defaults to nothing, coach picks the federation</li>
+    <li>Level is a free text field (federations use different naming)</li>
+    <li>Any coach in the gym can see and edit all athletes in that gym</li>
+  </ul>
+</div>
+
+<p style="font-size:0.85rem;color:#64748b;">Does this look right? Reply in chat.</p>

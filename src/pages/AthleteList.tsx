@@ -15,29 +15,29 @@ export default function AthleteList() {
   return (
     <div className="h-full overflow-auto p-6">
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-lg font-bold text-slate-900">Athletes</h1>
+        <h1 className="text-lg font-bold text-violet-100">Athletes</h1>
         <button
           type="button"
           onClick={() => setShowAdd(true)}
-          className="rounded bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-700"
+          className="rounded bg-orange-500 px-3 py-1.5 text-sm font-semibold text-white hover:bg-orange-600"
         >
           + Add athlete
         </button>
       </div>
 
       {athletes.length === 0 ? (
-        <p className="text-sm text-slate-400">No athletes yet. Add one to get started.</p>
+        <p className="text-sm text-violet-400">No athletes yet. Add one to get started.</p>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+        <div className="overflow-hidden rounded-lg border border-border bg-card">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-xs font-semibold uppercase text-slate-500">
+            <thead className="bg-[#1a1728] text-xs font-semibold uppercase text-violet-400">
               <tr>
                 <th className="px-4 py-3 text-left">Name</th>
                 <th className="px-4 py-3 text-left">Level</th>
                 <th className="px-4 py-3 text-left">Country</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-border">
               {athletes.map(athlete => {
                 const country = countryByCode(athlete.country)
                 return (
@@ -47,11 +47,11 @@ export default function AthleteList() {
                     onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && navigate(`/athletes/${athlete.id}`)}
                     tabIndex={0}
                     role="link"
-                    className="cursor-pointer hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+                    className="cursor-pointer hover:bg-[#1a1728] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-orange-500"
                   >
-                    <td className="px-4 py-3 font-medium text-slate-900">{athlete.full_name}</td>
-                    <td className="px-4 py-3 text-slate-500">{athlete.level}</td>
-                    <td className="px-4 py-3 text-slate-500">
+                    <td className="px-4 py-3 font-medium text-violet-100">{athlete.full_name}</td>
+                    <td className="px-4 py-3 text-violet-400">{athlete.level}</td>
+                    <td className="px-4 py-3 text-violet-400">
                       {country ? `${country.flag} ${country.name}` : athlete.country}
                     </td>
                   </tr>

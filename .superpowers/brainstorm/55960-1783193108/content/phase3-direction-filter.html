@@ -1,0 +1,111 @@
+<h2>Skill catalog — group + direction filters</h2>
+<p class="subtitle">Two filter rows: somersault count on top, direction below. Works together.</p>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">Option A — Two filter rows (group + direction)</div>
+    <div class="mockup-body" style="padding:0;display:flex;flex-direction:column;height:400px;">
+      <div style="padding:10px;border-bottom:1px solid #f1f5f9;background:#f8fafc;">
+        <div style="border:1px solid #e2e8f0;border-radius:6px;padding:7px 10px;font-size:0.75rem;color:#94a3b8;background:white;margin-bottom:8px;">🔍 Search…</div>
+        <!-- Row 1: Group -->
+        <div style="display:flex;gap:4px;margin-bottom:6px;">
+          <span style="background:#f1f5f9;color:#64748b;border-radius:20px;padding:3px 8px;font-size:0.68rem;border:1px solid #e2e8f0;">All</span>
+          <span style="background:#4f46e5;color:white;border-radius:20px;padding:3px 8px;font-size:0.68rem;">Single</span>
+          <span style="background:#f1f5f9;color:#64748b;border-radius:20px;padding:3px 8px;font-size:0.68rem;border:1px solid #e2e8f0;">Double</span>
+          <span style="background:#f1f5f9;color:#64748b;border-radius:20px;padding:3px 8px;font-size:0.68rem;border:1px solid #e2e8f0;">Triple/Quad</span>
+        </div>
+        <!-- Row 2: Direction -->
+        <div style="display:flex;gap:4px;">
+          <span style="font-size:0.65rem;color:#94a3b8;align-self:center;margin-right:2px;">Direction:</span>
+          <span style="background:#f1f5f9;color:#64748b;border-radius:20px;padding:3px 8px;font-size:0.68rem;border:1px solid #e2e8f0;">All</span>
+          <span style="background:#0ea5e9;color:white;border-radius:20px;padding:3px 8px;font-size:0.68rem;">Back</span>
+          <span style="background:#f1f5f9;color:#64748b;border-radius:20px;padding:3px 8px;font-size:0.68rem;border:1px solid #e2e8f0;">Front</span>
+        </div>
+      </div>
+      <!-- Skill list: Single Back -->
+      <div style="flex:1;overflow-y:auto;padding:8px;">
+        <div style="font-size:0.65rem;font-weight:700;color:#0ea5e9;text-transform:uppercase;letter-spacing:0.06em;padding:4px 6px;margin-bottom:4px;">Single · Back</div>
+        <div style="padding:8px;border-radius:6px;background:#ede9fe;margin-bottom:4px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;border:1px solid #c4b5fd;">
+          <div>
+            <div style="font-size:0.78rem;font-weight:600;color:#1e293b;">Back somersault</div>
+            <div style="font-size:0.67rem;color:#6366f1;">801 · T: 0.5 · P: 0.6 · S: 0.7</div>
+          </div>
+          <div style="background:#4f46e5;color:white;border-radius:4px;padding:2px 7px;font-size:0.7rem;font-weight:700;">+</div>
+        </div>
+        <div style="padding:8px;border-radius:6px;background:white;border:1px solid #f1f5f9;margin-bottom:4px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:0.78rem;font-weight:600;color:#1e293b;">Back 1/1 twist</div>
+            <div style="font-size:0.67rem;color:#94a3b8;">802 · S: 0.3</div>
+          </div>
+          <div style="background:#e2e8f0;color:#64748b;border-radius:4px;padding:2px 7px;font-size:0.7rem;font-weight:700;">+</div>
+        </div>
+        <div style="padding:8px;border-radius:6px;background:white;border:1px solid #f1f5f9;margin-bottom:4px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:0.78rem;font-weight:600;color:#1e293b;">Back 2/1 twist</div>
+            <div style="font-size:0.67rem;color:#94a3b8;">803 · S: 0.5</div>
+          </div>
+          <div style="background:#e2e8f0;color:#64748b;border-radius:4px;padding:2px 7px;font-size:0.7rem;font-weight:700;">+</div>
+        </div>
+        <div style="padding:8px;border-radius:6px;background:white;border:1px solid #f1f5f9;margin-bottom:4px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:0.78rem;font-weight:600;color:#1e293b;">Back 3/1 twist</div>
+            <div style="font-size:0.67rem;color:#94a3b8;">804 · S: 0.7</div>
+          </div>
+          <div style="background:#e2e8f0;color:#64748b;border-radius:4px;padding:2px 7px;font-size:0.7rem;font-weight:700;">+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">Option B — Combined tags (single row)</div>
+    <div class="mockup-body" style="padding:0;display:flex;flex-direction:column;height:400px;">
+      <div style="padding:10px;border-bottom:1px solid #f1f5f9;background:#f8fafc;">
+        <div style="border:1px solid #e2e8f0;border-radius:6px;padding:7px 10px;font-size:0.75rem;color:#94a3b8;background:white;margin-bottom:8px;">🔍 Search…</div>
+        <!-- Single row of combined tags -->
+        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+          <span style="background:#f1f5f9;color:#64748b;border-radius:20px;padding:3px 7px;font-size:0.66rem;border:1px solid #e2e8f0;">All</span>
+          <span style="background:#0ea5e9;color:white;border-radius:20px;padding:3px 7px;font-size:0.66rem;">Single Back</span>
+          <span style="background:#f1f5f9;color:#64748b;border-radius:20px;padding:3px 7px;font-size:0.66rem;border:1px solid #e2e8f0;">Single Front</span>
+          <span style="background:#f1f5f9;color:#64748b;border-radius:20px;padding:3px 7px;font-size:0.66rem;border:1px solid #e2e8f0;">Double Back</span>
+          <span style="background:#f1f5f9;color:#64748b;border-radius:20px;padding:3px 7px;font-size:0.66rem;border:1px solid #e2e8f0;">Double Front</span>
+          <span style="background:#f1f5f9;color:#64748b;border-radius:20px;padding:3px 7px;font-size:0.66rem;border:1px solid #e2e8f0;">Triple/Quad</span>
+        </div>
+      </div>
+      <!-- Skill list: Single Back selected -->
+      <div style="flex:1;overflow-y:auto;padding:8px;">
+        <div style="font-size:0.65rem;font-weight:700;color:#0ea5e9;text-transform:uppercase;letter-spacing:0.06em;padding:4px 6px;margin-bottom:4px;">Single · Back</div>
+        <div style="padding:8px;border-radius:6px;background:#ede9fe;margin-bottom:4px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;border:1px solid #c4b5fd;">
+          <div>
+            <div style="font-size:0.78rem;font-weight:600;color:#1e293b;">Back somersault</div>
+            <div style="font-size:0.67rem;color:#6366f1;">801 · T: 0.5 · P: 0.6 · S: 0.7</div>
+          </div>
+          <div style="background:#4f46e5;color:white;border-radius:4px;padding:2px 7px;font-size:0.7rem;font-weight:700;">+</div>
+        </div>
+        <div style="padding:8px;border-radius:6px;background:white;border:1px solid #f1f5f9;margin-bottom:4px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:0.78rem;font-weight:600;color:#1e293b;">Back 1/1 twist</div>
+            <div style="font-size:0.67rem;color:#94a3b8;">802 · S: 0.3</div>
+          </div>
+          <div style="background:#e2e8f0;color:#64748b;border-radius:4px;padding:2px 7px;font-size:0.7rem;font-weight:700;">+</div>
+        </div>
+        <div style="padding:8px;border-radius:6px;background:white;border:1px solid #f1f5f9;margin-bottom:4px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:0.78rem;font-weight:600;color:#1e293b;">Back 2/1 twist</div>
+            <div style="font-size:0.67rem;color:#94a3b8;">803 · S: 0.5</div>
+          </div>
+          <div style="background:#e2e8f0;color:#64748b;border-radius:4px;padding:2px 7px;font-size:0.7rem;font-weight:700;">+</div>
+        </div>
+        <div style="padding:8px;border-radius:6px;background:white;border:1px solid #f1f5f9;margin-bottom:4px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:0.78rem;font-weight:600;color:#1e293b;">Back 3/1 twist</div>
+            <div style="font-size:0.67rem;color:#94a3b8;">804 · S: 0.7</div>
+          </div>
+          <div style="background:#e2e8f0;color:#64748b;border-radius:4px;padding:2px 7px;font-size:0.7rem;font-weight:700;">+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p style="font-size:0.85rem;color:#64748b;margin-top:16px;"><strong>A</strong> = two rows (group + direction separately) · <strong>B</strong> = one row of combined tags (Single Back, Single Front, Double Back…). Which feels easier to use?</p>

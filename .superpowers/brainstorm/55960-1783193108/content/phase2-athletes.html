@@ -1,0 +1,58 @@
+<h2>Phase 2 — Athlete Management</h2>
+<p class="subtitle">The Athletes page: list, add, and manage athletes in the coach's gym</p>
+
+<div class="mockup">
+  <div class="mockup-header">/athletes — Athlete list</div>
+  <div class="mockup-body" style="padding:0;display:flex;height:380px;">
+    <!-- Sidebar -->
+    <div style="width:140px;background:#1e293b;color:#94a3b8;padding:14px;display:flex;flex-direction:column;gap:4px;flex-shrink:0;">
+      <div style="color:white;font-weight:700;font-size:0.85rem;margin-bottom:16px;">ElevationRx</div>
+      <div style="padding:7px 8px;border-radius:5px;font-size:0.75rem;">📊 Dashboard</div>
+      <div style="padding:7px 8px;border-radius:5px;background:#334155;color:white;font-size:0.75rem;">🏃 Athletes</div>
+      <div style="padding:7px 8px;border-radius:5px;font-size:0.75rem;">📋 Routines</div>
+    </div>
+    <!-- Main content -->
+    <div style="flex:1;background:#f8fafc;padding:16px;overflow:auto;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <div style="font-weight:700;font-size:0.95rem;color:#1e293b;">Athletes <span style="font-weight:400;color:#94a3b8;font-size:0.8rem;">(4)</span></div>
+        <div style="background:#4f46e5;color:white;border-radius:6px;padding:6px 12px;font-size:0.75rem;font-weight:600;">+ Add athlete</div>
+      </div>
+      <!-- Table -->
+      <div style="background:white;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;">
+        <div style="display:grid;grid-template-columns:1fr 80px 80px 90px;padding:8px 14px;background:#f1f5f9;font-size:0.7rem;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.04em;gap:8px;">
+          <div>Name</div><div>Level</div><div>Country</div><div>Routines</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 80px 80px 90px;padding:10px 14px;border-top:1px solid #f1f5f9;font-size:0.8rem;color:#1e293b;gap:8px;align-items:center;">
+          <div style="font-weight:500;">Ana González</div><div>Elite</div><div>🇲🇽 MEX</div>
+          <div><span style="background:#ede9fe;color:#5b21b6;border-radius:4px;padding:2px 8px;font-size:0.72rem;">2 routines</span></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 80px 80px 90px;padding:10px 14px;border-top:1px solid #f1f5f9;font-size:0.8rem;color:#1e293b;gap:8px;align-items:center;background:#fafafa;">
+          <div style="font-weight:500;">Carlos Mendoza</div><div>Junior</div><div>🇲🇽 MEX</div>
+          <div><span style="background:#ede9fe;color:#5b21b6;border-radius:4px;padding:2px 8px;font-size:0.72rem;">1 routine</span></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 80px 80px 90px;padding:10px 14px;border-top:1px solid #f1f5f9;font-size:0.8rem;color:#1e293b;gap:8px;align-items:center;">
+          <div style="font-weight:500;">Sofia Herrera</div><div>Age Group</div><div>🇲🇽 MEX</div>
+          <div><span style="background:#f1f5f9;color:#94a3b8;border-radius:4px;padding:2px 8px;font-size:0.72rem;">0 routines</span></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 80px 80px 90px;padding:10px 14px;border-top:1px solid #f1f5f9;font-size:0.8rem;color:#1e293b;gap:8px;align-items:center;background:#fafafa;">
+          <div style="font-weight:500;">Diego Ruiz</div><div>Elite</div><div>🇨🇴 COL</div>
+          <div><span style="background:#ede9fe;color:#5b21b6;border-radius:4px;padding:2px 8px;font-size:0.72rem;">3 routines</span></div>
+        </div>
+      </div>
+      <p style="font-size:0.72rem;color:#94a3b8;margin-top:10px;">Click a row to view athlete's routines → Edit / delete from detail view</p>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:20px;">
+  <h3>What gets built in Phase 2</h3>
+  <ul style="font-size:0.85rem;color:#475569;line-height:1.8;padding-left:20px;">
+    <li><strong>Athlete list</strong> — fetches all athletes where <code>gym_id</code> matches the logged-in coach's gym</li>
+    <li><strong>Add athlete modal</strong> — name, level (text field), country — saves to Supabase</li>
+    <li><strong>Athlete row click</strong> — navigates to <code>/athletes/:id</code> showing that athlete's routines</li>
+    <li><strong>Edit / Delete</strong> — from the athlete detail view</li>
+    <li><strong>Routine count badge</strong> — how many routines exist for each athlete</li>
+  </ul>
+</div>
+
+<p style="font-size:0.85rem;color:#64748b;">Does this look right? Reply in chat.</p>

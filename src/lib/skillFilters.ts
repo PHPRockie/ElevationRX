@@ -5,8 +5,15 @@ export type CountFilter = 'all' | 'single' | 'double' | 'triple_quad'
 
 export function inferSomersaultCount(name: string): 'single' | 'double' | 'triple_quad' {
   const lower = name.toLowerCase()
-  if (lower.includes('triple') || lower.includes('quad')) return 'triple_quad'
-  if (lower.includes('double')) return 'double'
+  // "Back Double Full" / "Back Triple Full" = single somersault + multiple twists; "Double Pullover" = 1¾ back
+  if (['back double full', 'back triple full', 'double pullover'].some(e => lower.includes(e))) return 'single'
+  if (lower.includes('triple') || lower.includes('triffis') || lower.includes('quad')) return 'triple_quad'
+  if (
+    lower.includes('double') || lower.includes('fliffis') ||
+    /\bhalf\s+(out|in)\b/.test(lower) || /\bfull\s+(out|in)\b/.test(lower) ||
+    /\brudy\s+out\b/.test(lower) || /\brandy\s+out\b/.test(lower) ||
+    lower.includes('2 3/4')
+  ) return 'double'
   return 'single'
 }
 

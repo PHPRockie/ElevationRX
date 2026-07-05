@@ -1,0 +1,65 @@
+<h2>Gym name in the sidebar + invite flow</h2>
+<p class="subtitle">Two things: where the gym name lives, and how coaches get invited</p>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">Sidebar — gym name always visible</div>
+    <div class="mockup-body" style="padding:0;height:340px;display:flex;">
+      <div style="width:180px;background:#1e293b;color:#94a3b8;padding:16px;display:flex;flex-direction:column;gap:4px;">
+        <div style="color:white;font-weight:800;font-size:0.95rem;">ElevationRx</div>
+        <div style="font-size:0.72rem;color:#6366f1;background:#1e1b4b;border-radius:4px;padding:3px 8px;margin-bottom:14px;margin-top:2px;width:fit-content;">🏟 World Elite</div>
+        <div style="padding:8px;border-radius:5px;font-size:0.78rem;">📊 Dashboard</div>
+        <div style="padding:8px;border-radius:5px;background:#334155;color:white;font-size:0.78rem;">🏃 Athletes</div>
+        <div style="padding:8px;border-radius:5px;font-size:0.78rem;">📋 Routines</div>
+        <div style="margin-top:auto;border-top:1px solid #334155;padding-top:12px;">
+          <div style="font-size:0.73rem;color:#cbd5e1;">Maria Coach</div>
+          <div style="font-size:0.68rem;color:#64748b;margin-top:2px;">Sign out</div>
+        </div>
+      </div>
+      <div style="flex:1;background:#f8fafc;padding:16px;">
+        <div style="font-weight:700;font-size:0.9rem;color:#1e293b;margin-bottom:10px;">Athletes</div>
+        <div style="background:white;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;">
+          <div style="display:grid;grid-template-columns:1fr 70px 70px;padding:7px 12px;background:#f1f5f9;font-size:0.68rem;font-weight:600;color:#64748b;text-transform:uppercase;gap:8px;">
+            <div>Name</div><div>Level</div><div>Country</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 70px 70px;padding:9px 12px;border-top:1px solid #f1f5f9;font-size:0.78rem;color:#1e293b;gap:8px;">
+            <div>Ana González</div><div>Elite</div><div>🇲🇽 MEX</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 70px 70px;padding:9px 12px;border-top:1px solid #f1f5f9;font-size:0.78rem;color:#1e293b;gap:8px;background:#fafafa;">
+            <div>Jake Thompson</div><div>Elite</div><div>🇺🇸 USA</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">How coaches get invited to a gym</div>
+    <div class="mockup-body" style="padding:20px;font-size:0.82rem;color:#475569;line-height:1.8;">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="background:#4f46e5;color:white;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;">1</div>
+          <div><strong>Admin creates the gym</strong> in Supabase — adds a row to the <code>gyms</code> table (name, country)</div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="background:#4f46e5;color:white;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;">2</div>
+          <div><strong>Admin invites coach by email</strong> via Supabase dashboard → Supabase sends invite email</div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="background:#4f46e5;color:white;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;">3</div>
+          <div><strong>Admin adds a row to <code>coaches</code></strong> table with the coach's <code>auth.uid()</code> and their gym's <code>gym_id</code></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="background:#4f46e5;color:white;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;">4</div>
+          <div><strong>Coach clicks the invite link</strong>, sets their password, and lands on the ElevationRx login page</div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="background:#22c55e;color:white;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;">✓</div>
+          <div><strong>App reads their gym</strong> — on login, looks up <code>coaches</code> by <code>auth.uid()</code> → loads gym name → shows it in the sidebar</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p style="font-size:0.85rem;color:#64748b;margin-top:16px;">Gym name appears as a badge under the logo — always visible. Does this look right?</p>

@@ -1,0 +1,63 @@
+<h2>Phase 1 — Auth + App Shell</h2>
+<p class="subtitle">Here's what the login page and post-login shell will look like</p>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">Login page</div>
+    <div class="mockup-body" style="background:#f8fafc;display:flex;align-items:center;justify-content:center;min-height:300px;">
+      <div style="background:white;border-radius:10px;box-shadow:0 2px 12px rgba(0,0,0,0.08);padding:32px;width:280px;">
+        <div style="font-weight:800;font-size:1.2rem;color:#1e293b;margin-bottom:4px;">ElevationRx</div>
+        <div style="font-size:0.8rem;color:#94a3b8;margin-bottom:24px;">Coach portal</div>
+        <div style="font-size:0.75rem;font-weight:600;color:#475569;margin-bottom:4px;">Email</div>
+        <div style="border:1px solid #e2e8f0;border-radius:6px;padding:8px 12px;font-size:0.8rem;color:#94a3b8;margin-bottom:12px;">coach@gym.com</div>
+        <div style="font-size:0.75rem;font-weight:600;color:#475569;margin-bottom:4px;">Password</div>
+        <div style="border:1px solid #e2e8f0;border-radius:6px;padding:8px 12px;font-size:0.8rem;color:#94a3b8;margin-bottom:20px;">••••••••</div>
+        <div style="background:#4f46e5;color:white;border-radius:6px;padding:10px;text-align:center;font-size:0.85rem;font-weight:600;">Sign in</div>
+        <div style="margin-top:12px;font-size:0.72rem;color:#94a3b8;text-align:center;">Contact your admin to get access</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">After login — App shell with sidebar</div>
+    <div class="mockup-body" style="padding:0;display:flex;height:300px;">
+      <div style="width:150px;background:#1e293b;color:#94a3b8;padding:14px;display:flex;flex-direction:column;gap:4px;flex-shrink:0;">
+        <div style="color:white;font-weight:700;font-size:0.85rem;margin-bottom:16px;">ElevationRx</div>
+        <div style="padding:7px 8px;border-radius:5px;background:#334155;color:white;font-size:0.75rem;">📊 Dashboard</div>
+        <div style="padding:7px 8px;border-radius:5px;font-size:0.75rem;">🏃 Athletes</div>
+        <div style="padding:7px 8px;border-radius:5px;font-size:0.75rem;">📋 Routines</div>
+        <div style="margin-top:auto;border-top:1px solid #334155;padding-top:10px;">
+          <div style="font-size:0.7rem;color:#cbd5e1;">Maria Coach</div>
+          <div style="font-size:0.68rem;color:#64748b;margin-top:2px;cursor:pointer;">Sign out</div>
+        </div>
+      </div>
+      <div style="flex:1;background:#f8fafc;padding:16px;">
+        <div style="font-weight:700;font-size:0.95rem;color:#1e293b;margin-bottom:12px;">Dashboard</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+          <div style="background:white;border:1px solid #e2e8f0;border-radius:8px;padding:12px;">
+            <div style="font-size:0.65rem;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;">Athletes</div>
+            <div style="font-size:1.4rem;font-weight:700;color:#1e293b;">12</div>
+          </div>
+          <div style="background:white;border:1px solid #e2e8f0;border-radius:8px;padding:12px;">
+            <div style="font-size:0.65rem;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;">Routines</div>
+            <div style="font-size:1.4rem;font-weight:700;color:#1e293b;">34</div>
+          </div>
+        </div>
+        <div style="height:60px;background:#e2e8f0;border-radius:6px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:20px;">
+  <h3>What gets built in Phase 1</h3>
+  <ul style="font-size:0.85rem;color:#475569;line-height:1.8;padding-left:20px;">
+    <li><strong>Login form</strong> — email + password via Supabase auth</li>
+    <li><strong>CoachContext</strong> — after login, looks up coach record by UID, stores gym_id in React context</li>
+    <li><strong>ProtectedRoute</strong> — redirects to /login if not authenticated; shows spinner while loading</li>
+    <li><strong>AppLayout</strong> — sidebar + page content area using React Router Outlet</li>
+    <li><strong>Error state</strong> — if coach logs in but has no coaches table record, shows "contact your admin"</li>
+  </ul>
+</div>
+
+<p style="font-size:0.85rem;color:#64748b;">Does this look right? Reply in chat.</p>

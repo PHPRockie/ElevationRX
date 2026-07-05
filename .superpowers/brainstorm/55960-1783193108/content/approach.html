@@ -1,0 +1,58 @@
+<h2>How should we build this?</h2>
+<p class="subtitle">Three approaches — pick the one that fits best</p>
+
+<div class="options">
+  <div class="option" data-choice="sequential" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Sequential — layer by layer <span style="font-size:0.75rem;background:#4f46e5;color:white;padding:2px 8px;border-radius:12px;margin-left:8px;">Recommended</span></h3>
+      <p>Build in dependency order. Each phase is usable before the next starts.</p>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+        <span style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:6px;padding:4px 10px;font-size:0.8rem;">1 · Auth + App Shell</span>
+        <span style="color:#94a3b8;align-self:center;">→</span>
+        <span style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:6px;padding:4px 10px;font-size:0.8rem;">2 · Athlete Management</span>
+        <span style="color:#94a3b8;align-self:center;">→</span>
+        <span style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:6px;padding:4px 10px;font-size:0.8rem;">3 · Routine Builder</span>
+        <span style="color:#94a3b8;align-self:center;">→</span>
+        <span style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:6px;padding:4px 10px;font-size:0.8rem;">4 · Dashboard</span>
+      </div>
+      <div class="pros-cons" style="margin-top:12px;">
+        <div class="pros"><h4>Pros</h4><ul><li>Always have something working</li><li>Auth gates everything from day 1</li><li>Natural dependency order</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Routine Builder comes later</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="core-first" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Core-first — Routine Builder now</h3>
+      <p>Build the most complex, most valuable piece first. Add auth and athletes around it later.</p>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+        <span style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:6px;padding:4px 10px;font-size:0.8rem;">1 · Routine Builder</span>
+        <span style="color:#94a3b8;align-self:center;">→</span>
+        <span style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:6px;padding:4px 10px;font-size:0.8rem;">2 · Auth + Shell</span>
+        <span style="color:#94a3b8;align-self:center;">→</span>
+        <span style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:6px;padding:4px 10px;font-size:0.8rem;">3 · Athletes</span>
+        <span style="color:#94a3b8;align-self:center;">→</span>
+        <span style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:6px;padding:4px 10px;font-size:0.8rem;">4 · Dashboard</span>
+      </div>
+      <div class="pros-cons" style="margin-top:12px;">
+        <div class="pros"><h4>Pros</h4><ul><li>Validates the hardest part early</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>No real data until auth exists</li><li>Harder to test without athletes</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="full" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Full plan — design everything now, build together</h3>
+      <p>Write one big spec covering all 4 phases, then implement everything in one go.</p>
+      <div class="pros-cons" style="margin-top:12px;">
+        <div class="pros"><h4>Pros</h4><ul><li>Holistic design, no surprises later</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Long upfront design session</li><li>Nothing working until all phases done</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>

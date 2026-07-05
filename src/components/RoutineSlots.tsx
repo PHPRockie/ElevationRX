@@ -35,10 +35,10 @@ export default function RoutineSlots({
 
   return (
     <div className="flex h-full flex-1 flex-col overflow-hidden">
-      <div className="flex flex-shrink-0 items-center justify-between border-b border-slate-200 bg-white px-4 py-3">
+      <div className="flex flex-shrink-0 items-center justify-between border-b border-border bg-card px-4 py-3">
         <div>
-          <p className="text-sm font-bold text-slate-900">{athlete?.full_name ?? '—'}</p>
-          <p className="text-xs text-slate-400">
+          <p className="text-sm font-bold text-violet-100">{athlete?.full_name ?? '—'}</p>
+          <p className="text-xs text-violet-400">
             {routine ? `Routine #${routine.routine_number}` : 'New routine'} · Individual
           </p>
         </div>
@@ -46,7 +46,7 @@ export default function RoutineSlots({
           type="button"
           onClick={onSave}
           disabled={saving || filledCount === 0}
-          className="rounded bg-indigo-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+          className="rounded bg-orange-500 px-4 py-1.5 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-50"
         >
           {saving ? 'Saving…' : 'Save routine'}
         </button>
@@ -58,14 +58,14 @@ export default function RoutineSlots({
             <div
               key={i}
               className={`flex items-center gap-2 rounded-lg border px-3 py-2 ${
-                slot ? 'border-slate-200 bg-white' : 'border-dashed border-slate-200 bg-slate-50'
+                slot ? 'border-border bg-card' : 'border-dashed border-border bg-[#1a1728]'
               }`}
             >
-              <span className="w-5 flex-shrink-0 text-xs font-bold text-slate-400">{i + 1}</span>
+              <span className="w-5 flex-shrink-0 text-xs font-bold text-violet-400">{i + 1}</span>
 
               {slot ? (
                 <>
-                  <span className="flex-1 truncate text-sm font-medium text-slate-900">
+                  <span className="flex-1 truncate text-sm font-medium text-violet-100">
                     {slot.skill.name}
                   </span>
 
@@ -77,8 +77,8 @@ export default function RoutineSlots({
                         onClick={() => onSetForm(i, f)}
                         className={`rounded px-1.5 py-0.5 text-xs font-semibold transition-colors ${
                           slot.form === f
-                            ? 'bg-indigo-600 text-white'
-                            : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                            ? 'bg-orange-500 text-white'
+                            : 'bg-[#1e1a2e] text-violet-400 border border-border hover:bg-[#1a1728]'
                         }`}
                       >
                         {FORM_LABELS[f]}
@@ -86,7 +86,7 @@ export default function RoutineSlots({
                     ))}
                   </div>
 
-                  <span className="w-10 flex-shrink-0 text-right text-sm font-bold text-indigo-700">
+                  <span className="w-10 flex-shrink-0 text-right text-sm font-bold text-orange-500">
                     {getSkillDD(slot).toFixed(1)}
                   </span>
 
@@ -95,7 +95,7 @@ export default function RoutineSlots({
                       type="button"
                       onClick={() => onMove(i, i - 1)}
                       disabled={i === 0}
-                      className="text-xs leading-none text-slate-300 hover:text-slate-600 disabled:opacity-30"
+                      className="text-xs leading-none text-violet-400 hover:text-violet-100 disabled:opacity-30"
                       title="Move up"
                       aria-label="Move skill up"
                     >
@@ -105,7 +105,7 @@ export default function RoutineSlots({
                       type="button"
                       onClick={() => onMove(i, i + 1)}
                       disabled={i === slots.length - 1}
-                      className="text-xs leading-none text-slate-300 hover:text-slate-600 disabled:opacity-30"
+                      className="text-xs leading-none text-violet-400 hover:text-violet-100 disabled:opacity-30"
                       title="Move down"
                       aria-label="Move skill down"
                     >
@@ -116,7 +116,7 @@ export default function RoutineSlots({
                   <button
                     type="button"
                     onClick={() => onRemove(i)}
-                    className="flex-shrink-0 text-slate-300 hover:text-red-500"
+                    className="flex-shrink-0 text-violet-400 hover:text-red-500"
                     title="Remove skill"
                     aria-label={`Remove ${slot.skill.name}`}
                   >
@@ -124,16 +124,16 @@ export default function RoutineSlots({
                   </button>
                 </>
               ) : (
-                <span className="text-xs text-slate-300">Empty slot</span>
+                <span className="text-xs text-violet-400">Empty slot</span>
               )}
             </div>
           ))}
         </div>
       </div>
 
-      <div className="flex flex-shrink-0 items-center justify-between border-t border-slate-200 bg-white px-4 py-3">
-        <span className="text-xs text-slate-500">{filledCount} / 10 skills added</span>
-        <span className="text-sm font-bold text-indigo-700">DD {totalDD.toFixed(1)}</span>
+      <div className="flex flex-shrink-0 items-center justify-between border-t border-border bg-card px-4 py-3">
+        <span className="text-xs text-violet-400">{filledCount} / 10 skills added</span>
+        <span className="text-sm font-bold text-orange-500">DD {totalDD.toFixed(1)}</span>
       </div>
     </div>
   )

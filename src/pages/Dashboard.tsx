@@ -15,40 +15,40 @@ export default function Dashboard() {
 
   return (
     <div className="h-full overflow-auto p-6">
-      <h1 className="mb-1 text-xl font-bold text-slate-900">
+      <h1 className="mb-1 text-xl font-bold text-violet-100">
         Welcome back, {firstName} <span aria-hidden="true">👋</span>
       </h1>
-      <p className="mb-6 text-sm text-slate-400">
+      <p className="mb-6 text-sm text-violet-400">
         {gym?.name}
         {gym?.country ? ` · ${gym.country}` : ''}
       </p>
 
-      <div className="mb-6 w-40 rounded-lg border border-slate-200 bg-white p-4">
-        <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">
+      <div className="mb-6 w-40 rounded-lg border border-border bg-card p-4">
+        <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-violet-400">
           Athletes
         </p>
-        <p className="text-3xl font-extrabold leading-none text-slate-900">{athleteCount}</p>
-        <p className="mt-1 text-xs text-slate-400">in your gym</p>
+        <p className="text-3xl font-extrabold leading-none text-violet-100">{athleteCount}</p>
+        <p className="mt-1 text-xs text-violet-400">in your gym</p>
       </div>
 
-      <h2 className="mb-2 text-sm font-bold text-slate-700">Recent athletes</h2>
+      <h2 className="mb-2 text-sm font-bold text-violet-300">Recent athletes</h2>
       {recentAthletes.length === 0 ? (
-        <p className="text-sm text-slate-400">No athletes yet.</p>
+        <p className="text-sm text-violet-400">No athletes yet.</p>
       ) : (
         <>
-          <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+          <div className="overflow-hidden rounded-lg border border-border bg-card">
             {recentAthletes.map((athlete, i) => {
               const country = countryByCode(athlete.country)
               return (
                 <Link
                   key={athlete.id}
                   to={`/athletes/${athlete.id}`}
-                  className={`flex items-center justify-between px-4 py-3 text-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 ${
-                    i < recentAthletes.length - 1 ? 'border-b border-slate-100' : ''
+                  className={`flex items-center justify-between px-4 py-3 text-sm hover:bg-[#1a1728] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-orange-500 ${
+                    i < recentAthletes.length - 1 ? 'border-b border-border' : ''
                   }`}
                 >
-                  <span className="font-medium text-slate-900">{athlete.full_name}</span>
-                  <span className="text-slate-400">
+                  <span className="font-medium text-violet-100">{athlete.full_name}</span>
+                  <span className="text-violet-400">
                     {athlete.level}
                     {country && ` · ${country.flag}`}
                   </span>
@@ -56,7 +56,7 @@ export default function Dashboard() {
               )
             })}
           </div>
-          <Link to="/athletes" className="mt-2 block text-xs text-indigo-600 hover:underline">
+          <Link to="/athletes" className="mt-2 block text-xs text-orange-500 hover:underline">
             View all athletes →
           </Link>
         </>

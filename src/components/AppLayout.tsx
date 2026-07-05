@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase'
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   `rounded px-3 py-2 text-sm transition-colors ${
-    isActive ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white'
+    isActive ? 'bg-orange-500 text-white' : 'text-zinc-500 hover:text-zinc-200'
   }`
 
 export default function AppLayout() {
@@ -16,11 +16,11 @@ export default function AppLayout() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <aside className="flex w-48 flex-shrink-0 flex-col bg-slate-900 px-3 py-4">
+    <div className="flex h-screen bg-surface">
+      <aside className="flex w-48 flex-shrink-0 flex-col bg-sidebar px-3 py-4">
         <div className="mb-1 text-sm font-extrabold text-white">ElevationRx</div>
         {gym && (
-          <span className="mb-5 w-fit rounded bg-indigo-950 px-2 py-0.5 text-xs text-indigo-400">
+          <span className="mb-5 w-fit rounded bg-zinc-800 px-2 py-0.5 text-xs text-orange-400">
             <span aria-hidden="true">🏟</span> {gym.name}
           </span>
         )}
@@ -37,12 +37,12 @@ export default function AppLayout() {
             </NavLink>
           )}
         </nav>
-        <div className="mt-auto border-t border-slate-700 pt-3">
-          <p className="text-xs text-slate-300">{coach?.full_name}</p>
+        <div className="mt-auto border-t border-border pt-3">
+          <p className="text-xs text-violet-200">{coach?.full_name}</p>
           <button
             type="button"
             onClick={handleSignOut}
-            className="mt-1 text-xs text-slate-500 hover:text-slate-300"
+            className="mt-1 text-xs text-zinc-500 hover:text-zinc-300"
           >
             Sign out
           </button>

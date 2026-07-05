@@ -52,35 +52,35 @@ export default function Settings() {
 
   return (
     <div className="h-full overflow-auto p-6">
-      <h1 className="mb-6 text-xl font-bold text-slate-900">Settings</h1>
+      <h1 className="mb-6 text-xl font-bold text-violet-100">Settings</h1>
 
       {/* Team */}
       <section className="mb-8">
-        <h2 className="mb-3 text-sm font-bold text-slate-700">Team</h2>
+        <h2 className="mb-3 text-sm font-bold text-violet-300">Team</h2>
         {coachesError && <p className="mb-2 text-xs text-red-500">{coachesError}</p>}
-        <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+        <div className="overflow-hidden rounded-lg border border-border bg-card">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-xs font-semibold uppercase text-slate-500">
+            <thead className="bg-[#1a1728] text-xs font-semibold uppercase text-violet-400">
               <tr>
                 <th className="px-4 py-3 text-left">Name</th>
                 <th className="px-4 py-3 text-left">Role</th>
                 <th className="px-4 py-3 text-left">Joined</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-border">
               {coaches.map(c => (
                 <tr key={c.id}>
-                  <td className="px-4 py-3 font-medium text-slate-900">{c.full_name}</td>
+                  <td className="px-4 py-3 font-medium text-violet-100">{c.full_name}</td>
                   <td className="px-4 py-3">
                     <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${
                       c.role === 'admin'
-                        ? 'bg-indigo-100 text-indigo-700'
-                        : 'bg-slate-100 text-slate-600'
+                        ? 'bg-orange-900/40 text-orange-400'
+                        : 'bg-zinc-800 text-zinc-400'
                     }`}>
                       {c.role === 'admin' ? 'Admin' : 'Coach'}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-slate-500">
+                  <td className="px-4 py-3 text-violet-400">
                     {new Date(c.created_at).toLocaleDateString()}
                   </td>
                 </tr>
@@ -93,11 +93,11 @@ export default function Settings() {
       {/* Invitations */}
       <section>
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-bold text-slate-700">Invitations</h2>
+          <h2 className="text-sm font-bold text-violet-300">Invitations</h2>
           <button
             type="button"
             onClick={() => setShowInviteModal(true)}
-            className="rounded bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-700"
+            className="rounded bg-orange-500 px-3 py-1.5 text-sm font-semibold text-white hover:bg-orange-600"
           >
             + Invite coach
           </button>
@@ -109,11 +109,11 @@ export default function Settings() {
         {invLoading ? (
           <Spinner />
         ) : invitations.length === 0 ? (
-          <p className="text-sm text-slate-400">No invitations yet.</p>
+          <p className="text-sm text-violet-400">No invitations yet.</p>
         ) : (
-          <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+          <div className="overflow-hidden rounded-lg border border-border bg-card">
             <table className="w-full text-sm">
-              <thead className="bg-slate-50 text-xs font-semibold uppercase text-slate-500">
+              <thead className="bg-[#1a1728] text-xs font-semibold uppercase text-violet-400">
                 <tr>
                   <th className="px-4 py-3 text-left">Email</th>
                   <th className="px-4 py-3 text-left">Name</th>
@@ -122,21 +122,21 @@ export default function Settings() {
                   <th className="px-4 py-3 text-left">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-border">
                 {invitations.map(inv => (
                   <tr key={inv.id} className={inv.status !== 'pending' ? 'opacity-50' : ''}>
-                    <td className="px-4 py-3 text-slate-700">{inv.email}</td>
-                    <td className="px-4 py-3 text-slate-700">{inv.full_name}</td>
-                    <td className="px-4 py-3 text-slate-500">
+                    <td className="px-4 py-3 text-violet-300">{inv.email}</td>
+                    <td className="px-4 py-3 text-violet-300">{inv.full_name}</td>
+                    <td className="px-4 py-3 text-violet-400">
                       {new Date(inv.expires_at).toLocaleDateString()}
                     </td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${
                         inv.status === 'pending'
-                          ? 'bg-amber-100 text-amber-700'
+                          ? 'bg-amber-900/40 text-amber-400'
                           : inv.status === 'accepted'
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-slate-100 text-slate-500'
+                          ? 'bg-green-900/40 text-green-400'
+                          : 'bg-zinc-800 text-zinc-400'
                       }`}>
                         {inv.status}
                       </span>
