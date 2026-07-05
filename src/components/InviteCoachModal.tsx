@@ -77,7 +77,7 @@ export default function InviteCoachModal({ onCreate, onClose }: Props) {
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   required
-                  className="w-full rounded border border-border bg-[#1a1728] px-3 py-2 text-sm outline-none focus:border-orange-500"
+                  className="w-full rounded border border-border bg-[#1a1728] px-3 py-2 text-sm text-violet-100 placeholder-violet-600 outline-none focus:border-orange-500"
                   placeholder={t('inviteModal.emailPlaceholder')}
                 />
               </div>
@@ -91,7 +91,7 @@ export default function InviteCoachModal({ onCreate, onClose }: Props) {
                   value={fullName}
                   onChange={e => setFullName(e.target.value)}
                   required
-                  className="w-full rounded border border-border bg-[#1a1728] px-3 py-2 text-sm outline-none focus:border-orange-500"
+                  className="w-full rounded border border-border bg-[#1a1728] px-3 py-2 text-sm text-violet-100 placeholder-violet-600 outline-none focus:border-orange-500"
                   placeholder={t('inviteModal.fullNamePlaceholder')}
                 />
               </div>

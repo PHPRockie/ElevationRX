@@ -53,7 +53,7 @@ export default function EditAthleteModal({ athlete, onSave, onClose }: Props) {
               value={fullName}
               onChange={e => setFullName(e.target.value)}
               required
-              className="w-full rounded border border-border bg-[#1a1728] px-3 py-2 text-sm outline-none focus:border-orange-500"
+              className="w-full rounded border border-border bg-[#1a1728] px-3 py-2 text-sm text-violet-100 placeholder-violet-600 outline-none focus:border-orange-500"
             />
           </div>
           <div>
@@ -66,7 +66,7 @@ export default function EditAthleteModal({ athlete, onSave, onClose }: Props) {
               value={level}
               onChange={e => setLevel(e.target.value)}
               required
-              className="w-full rounded border border-border bg-[#1a1728] px-3 py-2 text-sm outline-none focus:border-orange-500"
+              className="w-full rounded border border-border bg-[#1a1728] px-3 py-2 text-sm text-violet-100 placeholder-violet-600 outline-none focus:border-orange-500"
             />
           </div>
           <div>
@@ -77,7 +77,7 @@ export default function EditAthleteModal({ athlete, onSave, onClose }: Props) {
               id="edit-country"
               value={country}
               onChange={e => setCountry(e.target.value)}
-              className="w-full rounded border border-border bg-[#1a1728] px-3 py-2 text-sm outline-none focus:border-orange-500"
+              className="w-full rounded border border-border bg-[#1a1728] px-3 py-2 text-sm text-violet-100 placeholder-violet-600 outline-none focus:border-orange-500"
             >
               {COUNTRIES.map(c => (
                 <option key={c.code} value={c.code}>

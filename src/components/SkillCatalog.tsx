@@ -23,7 +23,7 @@ export default function SkillCatalog({ onAdd, full }: Props) {
           placeholder="🔍 Search by name or FIG code…"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="mb-3 w-full rounded border border-border bg-[#1a1728] px-3 py-1.5 text-sm outline-none focus:border-orange-500"
+          className="mb-3 w-full rounded border border-border bg-[#1a1728] px-3 py-1.5 text-sm text-violet-100 placeholder-violet-600 outline-none focus:border-orange-500"
         />
         <div className="mb-2 flex gap-2">
           {(['front', 'back'] as DirectionFilter[]).map(d => (
