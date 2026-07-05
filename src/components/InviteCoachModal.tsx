@@ -37,8 +37,9 @@ export default function InviteCoachModal({ onCreate, onClose }: Props) {
     }
   }
 
+  const baseUrl = (import.meta.env.VITE_APP_URL as string | undefined)?.replace(/\/$/, '') ?? window.location.origin
   const inviteUrl = createdInvite
-    ? `${window.location.origin}/accept-invite?token=${createdInvite.token}`
+    ? `${baseUrl}/accept-invite?token=${createdInvite.token}`
     : ''
 
   async function handleCopy() {
