@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import type { Invitation } from '../types/database'
 
 interface Props {
@@ -13,6 +13,13 @@ export default function InviteCoachModal({ onCreate, onClose }: Props) {
   const [error, setError] = useState<string | null>(null)
   const [createdInvite, setCreatedInvite] = useState<Invitation | null>(null)
   const [copied, setCopied] = useState(false)
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current)
+    }
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -33,9 +40,13 @@ export default function InviteCoachModal({ onCreate, onClose }: Props) {
     : ''
 
   async function handleCopy() {
-    await navigator.clipboard.writeText(inviteUrl)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    try {
+      await navigator.clipboard.writeText(inviteUrl)
+      setCopied(true)
+      copyTimeoutRef.current = setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // Clipboard access denied — user can copy the URL manually
+    }
   }
 
   return (
@@ -116,6 +127,7 @@ export default function InviteCoachModal({ onCreate, onClose }: Props) {
             <div className="flex gap-2">
               <button
                 type="button"
+                aria-live="polite"
                 onClick={handleCopy}
                 className="flex-1 rounded border border-slate-200 py-2 text-sm text-slate-600 hover:bg-slate-50"
               >
