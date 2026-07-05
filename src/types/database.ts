@@ -5,10 +5,27 @@ export interface Gym {
   created_at: string
 }
 
+export type CoachRole = 'admin' | 'coach'
+
 export interface Coach {
   id: string
   gym_id: string
   full_name: string
+  role: CoachRole
+  created_at: string
+}
+
+export type InvitationStatus = 'pending' | 'accepted' | 'revoked'
+
+export interface Invitation {
+  id: string
+  gym_id: string
+  email: string
+  full_name: string
+  token: string
+  expires_at: string
+  invited_by: string
+  status: InvitationStatus
   created_at: string
 }
 
