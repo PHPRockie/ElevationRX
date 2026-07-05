@@ -31,6 +31,11 @@ export default function AppLayout() {
           <NavLink to="/athletes" className={navLinkClass}>
             <span aria-hidden="true">🏃</span> Athletes
           </NavLink>
+          {coach?.role === 'admin' && (
+            <NavLink to="/settings" className={navLinkClass}>
+              <span aria-hidden="true">⚙</span> Settings
+            </NavLink>
+          )}
         </nav>
         <div className="mt-auto border-t border-slate-700 pt-3">
           <p className="text-xs text-slate-300">{coach?.full_name}</p>
