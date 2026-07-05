@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { COUNTRIES } from '../lib/countries'
 import type { Athlete } from '../types/database'
 
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export default function EditAthleteModal({ athlete, onSave, onClose }: Props) {
+  const { t } = useTranslation()
   const [fullName, setFullName] = useState(athlete.full_name)
   const [level, setLevel] = useState(athlete.level)
   const [country, setCountry] = useState(athlete.country)
@@ -22,7 +24,7 @@ export default function EditAthleteModal({ athlete, onSave, onClose }: Props) {
     try {
       await onSave({ full_name: fullName.trim(), level: level.trim(), country })
     } catch {
-      setError('Failed to save. Please try again.')
+      setError(t('editAthleteModal.error'))
     } finally {
       setSaving(false)
     }
@@ -37,10 +39,14 @@ export default function EditAthleteModal({ athlete, onSave, onClose }: Props) {
       onKeyDown={e => e.key === 'Escape' && onClose()}
     >
       <div className="w-full max-w-sm rounded-lg bg-card p-6 shadow-lg">
-        <h2 id="edit-athlete-title" className="mb-4 text-base font-bold text-violet-100">Edit athlete</h2>
+        <h2 id="edit-athlete-title" className="mb-4 text-base font-bold text-violet-100">
+          {t('editAthleteModal.title')}
+        </h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
-            <label htmlFor="edit-fullname" className="mb-1 block text-xs font-semibold text-violet-300">Full name</label>
+            <label htmlFor="edit-fullname" className="mb-1 block text-xs font-semibold text-violet-300">
+              {t('editAthleteModal.fullName')}
+            </label>
             <input
               id="edit-fullname"
               type="text"
@@ -51,7 +57,9 @@ export default function EditAthleteModal({ athlete, onSave, onClose }: Props) {
             />
           </div>
           <div>
-            <label htmlFor="edit-level" className="mb-1 block text-xs font-semibold text-violet-300">Level</label>
+            <label htmlFor="edit-level" className="mb-1 block text-xs font-semibold text-violet-300">
+              {t('editAthleteModal.level')}
+            </label>
             <input
               id="edit-level"
               type="text"
@@ -62,7 +70,9 @@ export default function EditAthleteModal({ athlete, onSave, onClose }: Props) {
             />
           </div>
           <div>
-            <label htmlFor="edit-country" className="mb-1 block text-xs font-semibold text-violet-300">Country</label>
+            <label htmlFor="edit-country" className="mb-1 block text-xs font-semibold text-violet-300">
+              {t('editAthleteModal.country')}
+            </label>
             <select
               id="edit-country"
               value={country}
@@ -84,14 +94,14 @@ export default function EditAthleteModal({ athlete, onSave, onClose }: Props) {
               disabled={saving}
               className="flex-1 rounded border border-border py-2 text-sm text-violet-300 hover:bg-[#1a1728] disabled:opacity-50"
             >
-              Cancel
+              {t('editAthleteModal.cancel')}
             </button>
             <button
               type="submit"
               disabled={saving}
               className="flex-1 rounded bg-orange-500 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-50"
             >
-              {saving ? 'Saving…' : 'Save'}
+              {saving ? t('editAthleteModal.saving') : t('editAthleteModal.save')}
             </button>
           </div>
         </form>

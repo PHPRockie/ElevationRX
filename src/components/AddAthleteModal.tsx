@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { COUNTRIES } from '../lib/countries'
 
 interface Props {
@@ -7,6 +8,7 @@ interface Props {
 }
 
 export default function AddAthleteModal({ onSave, onClose }: Props) {
+  const { t } = useTranslation()
   const [fullName, setFullName] = useState('')
   const [level, setLevel] = useState('')
   const [country, setCountry] = useState(COUNTRIES[0].code)
@@ -20,7 +22,7 @@ export default function AddAthleteModal({ onSave, onClose }: Props) {
     try {
       await onSave({ full_name: fullName.trim(), level: level.trim(), country })
     } catch {
-      setError('Failed to save. Please try again.')
+      setError(t('addAthleteModal.error'))
     } finally {
       setSaving(false)
     }
@@ -35,10 +37,14 @@ export default function AddAthleteModal({ onSave, onClose }: Props) {
       onKeyDown={e => e.key === 'Escape' && onClose()}
     >
       <div className="w-full max-w-sm rounded-lg bg-card p-6 shadow-lg">
-        <h2 id="add-athlete-title" className="mb-4 text-base font-bold text-violet-100">Add athlete</h2>
+        <h2 id="add-athlete-title" className="mb-4 text-base font-bold text-violet-100">
+          {t('addAthleteModal.title')}
+        </h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
-            <label htmlFor="add-fullname" className="mb-1 block text-xs font-semibold text-violet-300">Full name</label>
+            <label htmlFor="add-fullname" className="mb-1 block text-xs font-semibold text-violet-300">
+              {t('addAthleteModal.fullName')}
+            </label>
             <input
               id="add-fullname"
               type="text"
@@ -46,11 +52,13 @@ export default function AddAthleteModal({ onSave, onClose }: Props) {
               onChange={e => setFullName(e.target.value)}
               required
               className="w-full rounded border border-border bg-[#1a1728] px-3 py-2 text-sm outline-none focus:border-orange-500"
-              placeholder="Ana González"
+              placeholder={t('addAthleteModal.fullNamePlaceholder')}
             />
           </div>
           <div>
-            <label htmlFor="add-level" className="mb-1 block text-xs font-semibold text-violet-300">Level</label>
+            <label htmlFor="add-level" className="mb-1 block text-xs font-semibold text-violet-300">
+              {t('addAthleteModal.level')}
+            </label>
             <input
               id="add-level"
               type="text"
@@ -58,11 +66,13 @@ export default function AddAthleteModal({ onSave, onClose }: Props) {
               onChange={e => setLevel(e.target.value)}
               required
               className="w-full rounded border border-border bg-[#1a1728] px-3 py-2 text-sm outline-none focus:border-orange-500"
-              placeholder="Elite, Junior, Age Group…"
+              placeholder={t('addAthleteModal.levelPlaceholder')}
             />
           </div>
           <div>
-            <label htmlFor="add-country" className="mb-1 block text-xs font-semibold text-violet-300">Country</label>
+            <label htmlFor="add-country" className="mb-1 block text-xs font-semibold text-violet-300">
+              {t('addAthleteModal.country')}
+            </label>
             <select
               id="add-country"
               value={country}
@@ -84,14 +94,14 @@ export default function AddAthleteModal({ onSave, onClose }: Props) {
               disabled={saving}
               className="flex-1 rounded border border-border py-2 text-sm text-violet-300 hover:bg-[#1a1728] disabled:opacity-50"
             >
-              Cancel
+              {t('addAthleteModal.cancel')}
             </button>
             <button
               type="submit"
               disabled={saving}
               className="flex-1 rounded bg-orange-500 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-50"
             >
-              {saving ? 'Saving…' : 'Save'}
+              {saving ? t('addAthleteModal.saving') : t('addAthleteModal.save')}
             </button>
           </div>
         </form>

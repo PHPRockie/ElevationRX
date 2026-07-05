@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
 import { useCoach } from '../contexts/CoachContext'
 import { useInvitations } from '../hooks/useInvitations'
@@ -10,6 +11,7 @@ import type { Coach } from '../types/database'
 export default function Settings() {
   const { coach, gym, loading: authLoading } = useCoach()
   const { invitations, loading: invLoading, error: invError, createInvitation, revokeInvitation } = useInvitations()
+  const { t } = useTranslation()
 
   const [coaches, setCoaches] = useState<Coach[]>([])
   const [coachesLoading, setCoachesLoading] = useState(true)
@@ -29,19 +31,19 @@ export default function Settings() {
       .order('full_name')
       .then(({ data, error }) => {
         if (cancelled) return
-        if (error) setCoachesError('Failed to load team.')
+        if (error) setCoachesError(t('settings.errorLoadTeam'))
         else setCoaches(data ?? [])
         setCoachesLoading(false)
       })
     return () => { cancelled = true }
-  }, [gym])
+  }, [gym, t])
 
   async function handleRevoke(id: string) {
     setRevokeError(null)
     try {
       await revokeInvitation(id)
     } catch {
-      setRevokeError('Failed to revoke invitation. Please try again.')
+      setRevokeError(t('settings.errorRevoke'))
     }
   }
 
@@ -50,21 +52,27 @@ export default function Settings() {
 
   if (coachesLoading) return <Spinner />
 
+  const statusLabel = (status: string) => {
+    if (status === 'pending') return t('settings.statusPending')
+    if (status === 'accepted') return t('settings.statusAccepted')
+    return t('settings.statusRevoked')
+  }
+
   return (
     <div className="h-full overflow-auto p-6">
-      <h1 className="mb-6 text-xl font-bold text-violet-100">Settings</h1>
+      <h1 className="mb-6 text-xl font-bold text-violet-100">{t('settings.title')}</h1>
 
       {/* Team */}
       <section className="mb-8">
-        <h2 className="mb-3 text-sm font-bold text-violet-300">Team</h2>
+        <h2 className="mb-3 text-sm font-bold text-violet-300">{t('settings.teamSection')}</h2>
         {coachesError && <p className="mb-2 text-xs text-red-500">{coachesError}</p>}
         <div className="overflow-hidden rounded-lg border border-border bg-card">
           <table className="w-full text-sm">
             <thead className="bg-[#1a1728] text-xs font-semibold uppercase text-violet-400">
               <tr>
-                <th className="px-4 py-3 text-left">Name</th>
-                <th className="px-4 py-3 text-left">Role</th>
-                <th className="px-4 py-3 text-left">Joined</th>
+                <th className="px-4 py-3 text-left">{t('settings.colName')}</th>
+                <th className="px-4 py-3 text-left">{t('settings.colRole')}</th>
+                <th className="px-4 py-3 text-left">{t('settings.colJoined')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -77,7 +85,7 @@ export default function Settings() {
                         ? 'bg-orange-900/40 text-orange-400'
                         : 'bg-zinc-800 text-zinc-400'
                     }`}>
-                      {c.role === 'admin' ? 'Admin' : 'Coach'}
+                      {c.role === 'admin' ? t('settings.roleAdmin') : t('settings.roleCoach')}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-violet-400">
@@ -93,13 +101,13 @@ export default function Settings() {
       {/* Invitations */}
       <section>
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-bold text-violet-300">Invitations</h2>
+          <h2 className="text-sm font-bold text-violet-300">{t('settings.invitationsSection')}</h2>
           <button
             type="button"
             onClick={() => setShowInviteModal(true)}
             className="rounded bg-orange-500 px-3 py-1.5 text-sm font-semibold text-white hover:bg-orange-600"
           >
-            + Invite coach
+            {t('settings.inviteButton')}
           </button>
         </div>
 
@@ -109,17 +117,17 @@ export default function Settings() {
         {invLoading ? (
           <Spinner />
         ) : invitations.length === 0 ? (
-          <p className="text-sm text-violet-400">No invitations yet.</p>
+          <p className="text-sm text-violet-400">{t('settings.noInvitations')}</p>
         ) : (
           <div className="overflow-hidden rounded-lg border border-border bg-card">
             <table className="w-full text-sm">
               <thead className="bg-[#1a1728] text-xs font-semibold uppercase text-violet-400">
                 <tr>
-                  <th className="px-4 py-3 text-left">Email</th>
-                  <th className="px-4 py-3 text-left">Name</th>
-                  <th className="px-4 py-3 text-left">Expires</th>
-                  <th className="px-4 py-3 text-left">Status</th>
-                  <th className="px-4 py-3 text-left">Actions</th>
+                  <th className="px-4 py-3 text-left">{t('settings.colEmail')}</th>
+                  <th className="px-4 py-3 text-left">{t('settings.colName')}</th>
+                  <th className="px-4 py-3 text-left">{t('settings.colExpires')}</th>
+                  <th className="px-4 py-3 text-left">{t('settings.colStatus')}</th>
+                  <th className="px-4 py-3 text-left">{t('settings.colActions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -138,7 +146,7 @@ export default function Settings() {
                           ? 'bg-green-900/40 text-green-400'
                           : 'bg-zinc-800 text-zinc-400'
                       }`}>
-                        {inv.status}
+                        {statusLabel(inv.status)}
                       </span>
                     </td>
                     <td className="px-4 py-3">
@@ -148,7 +156,7 @@ export default function Settings() {
                           onClick={() => handleRevoke(inv.id)}
                           className="text-xs text-red-500 hover:underline"
                         >
-                          Revoke
+                          {t('settings.revokeButton')}
                         </button>
                       )}
                     </td>

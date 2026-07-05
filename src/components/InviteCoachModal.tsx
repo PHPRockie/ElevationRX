@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { Invitation } from '../types/database'
 
 interface Props {
@@ -7,6 +8,7 @@ interface Props {
 }
 
 export default function InviteCoachModal({ onCreate, onClose }: Props) {
+  const { t } = useTranslation()
   const [email, setEmail] = useState('')
   const [fullName, setFullName] = useState('')
   const [saving, setSaving] = useState(false)
@@ -29,7 +31,7 @@ export default function InviteCoachModal({ onCreate, onClose }: Props) {
       const invite = await onCreate(email.trim(), fullName.trim())
       setCreatedInvite(invite)
     } catch {
-      setError('Failed to create invite. Please try again.')
+      setError(t('inviteModal.error'))
     } finally {
       setSaving(false)
     }
@@ -61,12 +63,12 @@ export default function InviteCoachModal({ onCreate, onClose }: Props) {
         {!createdInvite ? (
           <>
             <h2 id="invite-coach-title" className="mb-4 text-base font-bold text-violet-100">
-              Invite coach
+              {t('inviteModal.title')}
             </h2>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <div>
                 <label htmlFor="invite-email" className="mb-1 block text-xs font-semibold text-violet-300">
-                  Email
+                  {t('inviteModal.email')}
                 </label>
                 <input
                   id="invite-email"
@@ -76,12 +78,12 @@ export default function InviteCoachModal({ onCreate, onClose }: Props) {
                   onChange={e => setEmail(e.target.value)}
                   required
                   className="w-full rounded border border-border bg-[#1a1728] px-3 py-2 text-sm outline-none focus:border-orange-500"
-                  placeholder="coach@example.com"
+                  placeholder={t('inviteModal.emailPlaceholder')}
                 />
               </div>
               <div>
                 <label htmlFor="invite-name" className="mb-1 block text-xs font-semibold text-violet-300">
-                  Full name
+                  {t('inviteModal.fullName')}
                 </label>
                 <input
                   id="invite-name"
@@ -90,7 +92,7 @@ export default function InviteCoachModal({ onCreate, onClose }: Props) {
                   onChange={e => setFullName(e.target.value)}
                   required
                   className="w-full rounded border border-border bg-[#1a1728] px-3 py-2 text-sm outline-none focus:border-orange-500"
-                  placeholder="Jane Smith"
+                  placeholder={t('inviteModal.fullNamePlaceholder')}
                 />
               </div>
               {error && <p className="text-xs text-red-500">{error}</p>}
@@ -101,14 +103,14 @@ export default function InviteCoachModal({ onCreate, onClose }: Props) {
                   disabled={saving}
                   className="flex-1 rounded border border-border py-2 text-sm text-violet-300 hover:bg-[#1a1728] disabled:opacity-50"
                 >
-                  Cancel
+                  {t('inviteModal.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
                   className="flex-1 rounded bg-orange-500 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-50"
                 >
-                  {saving ? 'Creating…' : 'Create invite'}
+                  {saving ? t('inviteModal.creating') : t('inviteModal.createInvite')}
                 </button>
               </div>
             </form>
@@ -116,10 +118,10 @@ export default function InviteCoachModal({ onCreate, onClose }: Props) {
         ) : (
           <>
             <h2 id="invite-coach-title" className="mb-2 text-base font-bold text-violet-100">
-              Invite created
+              {t('inviteModal.createdTitle')}
             </h2>
             <p className="mb-3 text-sm text-violet-400">
-              Share this link with {createdInvite.full_name}:
+              {t('inviteModal.createdDesc', { name: createdInvite.full_name })}
             </p>
             <div className="mb-4 rounded border border-border bg-[#1a1728] px-3 py-2">
               <span className="break-all font-mono text-xs text-violet-300">{inviteUrl}</span>
@@ -131,14 +133,14 @@ export default function InviteCoachModal({ onCreate, onClose }: Props) {
                 onClick={handleCopy}
                 className="flex-1 rounded border border-border py-2 text-sm text-violet-300 hover:bg-[#1a1728]"
               >
-                {copied ? '✓ Copied!' : 'Copy link'}
+                {copied ? t('inviteModal.copied') : t('inviteModal.copyLink')}
               </button>
               <button
                 type="button"
                 onClick={onClose}
                 className="flex-1 rounded bg-orange-500 py-2 text-sm font-semibold text-white hover:bg-orange-600"
               >
-                Done
+                {t('inviteModal.done')}
               </button>
             </div>
           </>

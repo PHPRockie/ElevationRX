@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAthletes } from '../hooks/useAthletes'
 import { countryByCode } from '../lib/countries'
 import AddAthleteModal from '../components/AddAthleteModal'
@@ -8,6 +9,7 @@ import Spinner from '../components/Spinner'
 export default function AthleteList() {
   const navigate = useNavigate()
   const { athletes, loading, addAthlete } = useAthletes()
+  const { t } = useTranslation()
   const [showAdd, setShowAdd] = useState(false)
 
   if (loading) return <Spinner />
@@ -15,26 +17,26 @@ export default function AthleteList() {
   return (
     <div className="h-full overflow-auto p-6">
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-lg font-bold text-violet-100">Athletes</h1>
+        <h1 className="text-lg font-bold text-violet-100">{t('athletes.title')}</h1>
         <button
           type="button"
           onClick={() => setShowAdd(true)}
           className="rounded bg-orange-500 px-3 py-1.5 text-sm font-semibold text-white hover:bg-orange-600"
         >
-          + Add athlete
+          {t('athletes.addButton')}
         </button>
       </div>
 
       {athletes.length === 0 ? (
-        <p className="text-sm text-violet-400">No athletes yet. Add one to get started.</p>
+        <p className="text-sm text-violet-400">{t('athletes.noAthletes')}</p>
       ) : (
         <div className="overflow-hidden rounded-lg border border-border bg-card">
           <table className="w-full text-sm">
             <thead className="bg-[#1a1728] text-xs font-semibold uppercase text-violet-400">
               <tr>
-                <th className="px-4 py-3 text-left">Name</th>
-                <th className="px-4 py-3 text-left">Level</th>
-                <th className="px-4 py-3 text-left">Country</th>
+                <th className="px-4 py-3 text-left">{t('athletes.colName')}</th>
+                <th className="px-4 py-3 text-left">{t('athletes.colLevel')}</th>
+                <th className="px-4 py-3 text-left">{t('athletes.colCountry')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">

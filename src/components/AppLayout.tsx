@@ -1,6 +1,9 @@
 import { NavLink, Outlet } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useCoach } from '../contexts/CoachContext'
 import { supabase } from '../lib/supabase'
+import { LANGUAGES, type LangCode } from '../i18n'
+import i18n from '../i18n'
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   `rounded px-3 py-2 text-sm transition-colors ${
@@ -9,10 +12,17 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
 
 export default function AppLayout() {
   const { coach, gym } = useCoach()
+  const { t } = useTranslation()
 
   async function handleSignOut() {
     const { error } = await supabase.auth.signOut()
     if (error) console.error('[AppLayout] sign-out failed', error)
+  }
+
+  function handleLangChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    const lang = e.target.value as LangCode
+    i18n.changeLanguage(lang)
+    localStorage.setItem('lang', lang)
   }
 
   return (
@@ -26,25 +36,35 @@ export default function AppLayout() {
         )}
         <nav aria-label="Main navigation" className="flex flex-col gap-1">
           <NavLink to="/dashboard" className={navLinkClass}>
-            <span aria-hidden="true">📊</span> Dashboard
+            <span aria-hidden="true">📊</span> {t('nav.dashboard')}
           </NavLink>
           <NavLink to="/athletes" className={navLinkClass}>
-            <span aria-hidden="true">🏃</span> Athletes
+            <span aria-hidden="true">🏃</span> {t('nav.athletes')}
           </NavLink>
           {coach?.role === 'admin' && (
             <NavLink to="/settings" className={navLinkClass}>
-              <span aria-hidden="true">⚙</span> Settings
+              <span aria-hidden="true">⚙</span> {t('nav.settings')}
             </NavLink>
           )}
         </nav>
         <div className="mt-auto border-t border-border pt-3">
+          <select
+            value={i18n.language}
+            onChange={handleLangChange}
+            aria-label={t('settings.language')}
+            className="mb-2 w-full rounded border border-border bg-transparent px-1 py-1 text-xs text-zinc-400 outline-none focus:border-orange-500"
+          >
+            {LANGUAGES.map(l => (
+              <option key={l.code} value={l.code}>{l.label}</option>
+            ))}
+          </select>
           <p className="text-xs text-violet-200">{coach?.full_name}</p>
           <button
             type="button"
             onClick={handleSignOut}
             className="mt-1 text-xs text-zinc-500 hover:text-zinc-300"
           >
-            Sign out
+            {t('nav.signOut')}
           </button>
         </div>
       </aside>

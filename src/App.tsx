@@ -10,6 +10,7 @@ import AthleteList from './pages/AthleteList'
 import AthleteDetail from './pages/AthleteDetail'
 import RoutineBuilder from './pages/RoutineBuilder'
 import Settings from './pages/Settings'
+import Setup from './pages/Setup'
 
 export default function App() {
   const { session } = useAuth()
@@ -18,6 +19,7 @@ export default function App() {
     <CoachProvider session={session}>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/setup" element={<Setup />} />
         <Route path="/accept-invite" element={<AcceptInvite />} />
         <Route
           element={

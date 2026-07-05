@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useCoach } from '../contexts/CoachContext'
 import { useDashboard } from '../hooks/useDashboard'
 import { countryByCode } from '../lib/countries'
@@ -7,6 +8,7 @@ import Spinner from '../components/Spinner'
 export default function Dashboard() {
   const { coach, gym } = useCoach()
   const { athleteCount, recentAthletes, loading, error } = useDashboard()
+  const { t } = useTranslation()
 
   const firstName = coach?.full_name.split(' ')[0] ?? ''
 
@@ -16,7 +18,7 @@ export default function Dashboard() {
   return (
     <div className="h-full overflow-auto p-6">
       <h1 className="mb-1 text-xl font-bold text-violet-100">
-        Welcome back, {firstName} <span aria-hidden="true">👋</span>
+        {t('dashboard.welcome', { name: firstName })} <span aria-hidden="true">👋</span>
       </h1>
       <p className="mb-6 text-sm text-violet-400">
         {gym?.name}
@@ -25,15 +27,15 @@ export default function Dashboard() {
 
       <div className="mb-6 w-40 rounded-lg border border-border bg-card p-4">
         <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-violet-400">
-          Athletes
+          {t('dashboard.athletes')}
         </p>
         <p className="text-3xl font-extrabold leading-none text-violet-100">{athleteCount}</p>
-        <p className="mt-1 text-xs text-violet-400">in your gym</p>
+        <p className="mt-1 text-xs text-violet-400">{t('dashboard.inYourGym')}</p>
       </div>
 
-      <h2 className="mb-2 text-sm font-bold text-violet-300">Recent athletes</h2>
+      <h2 className="mb-2 text-sm font-bold text-violet-300">{t('dashboard.recentAthletes')}</h2>
       {recentAthletes.length === 0 ? (
-        <p className="text-sm text-violet-400">No athletes yet.</p>
+        <p className="text-sm text-violet-400">{t('dashboard.noAthletes')}</p>
       ) : (
         <>
           <div className="overflow-hidden rounded-lg border border-border bg-card">
@@ -57,7 +59,7 @@ export default function Dashboard() {
             })}
           </div>
           <Link to="/athletes" className="mt-2 block text-xs text-orange-500 hover:underline">
-            View all athletes →
+            {t('dashboard.viewAll')}
           </Link>
         </>
       )}
