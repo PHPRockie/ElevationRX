@@ -20,43 +20,49 @@ export default function AthleteDetail() {
   const { updateAthlete, deleteAthlete } = useAthletes()
 
   const [athlete, setAthlete] = useState<Athlete | null>(null)
-  const [routines, setRoutines] = useState<RoutineSummary[]>([])
+  const [itRoutines, setItRoutines] = useState<RoutineSummary[]>([])
+  const [dmtRoutines, setDmtRoutines] = useState<RoutineSummary[]>([])
   const [loading, setLoading] = useState(true)
   const [fetchError, setFetchError] = useState<string | null>(null)
   const [deleteError, setDeleteError] = useState<string | null>(null)
   const [showEdit, setShowEdit] = useState(false)
+
+  function computeSummaries(routs: any[]): RoutineSummary[] {
+    return routs.map((r: any) => {
+      const skillRows = r.routine_skills ?? []
+      const total_dd = skillRows.reduce((sum: number, rs: any) => {
+        const s = rs.skills
+        if (!s) return sum
+        const dd =
+          rs.selected_form === 'tuck' ? s.dd_tuck :
+          rs.selected_form === 'pike' ? s.dd_pike :
+          rs.selected_form === 'straight' ? s.dd_straight : null
+        return sum + (dd ?? 0)
+      }, 0)
+      const { routine_skills: _, ...routine } = r
+      return { ...routine, skill_count: skillRows.length, total_dd }
+    })
+  }
 
   const loadData = useCallback(async () => {
     if (!athleteId) return
     setFetchError(null)
     setLoading(true)
     try {
-      const [{ data: ath, error: athError }, { data: routs, error: routsError }] = await Promise.all([
-        supabase.from('athletes').select('*').eq('id', athleteId).single(),
-        supabase
-          .from('routines')
-          .select('*, routine_skills(selected_form, skills(dd_tuck, dd_pike, dd_straight))')
-          .eq('athlete_id', athleteId)
-          .order('routine_number'),
-      ])
+      const { data: ath, error: athError } = await supabase
+        .from('athletes').select('*').eq('id', athleteId).single()
       if (athError) { setFetchError('Failed to load athlete.'); return }
       setAthlete(ath)
+
+      const { data: routs, error: routsError } = await supabase
+        .from('routines')
+        .select('*, routine_skills(selected_form, skills(dd_tuck, dd_pike, dd_straight))')
+        .eq('athlete_id', athleteId)
+        .order('routine_number')
+
       if (routs && !routsError) {
-        const summaries: RoutineSummary[] = routs.map((r: any) => {
-          const skillRows = r.routine_skills ?? []
-          const total_dd = skillRows.reduce((sum: number, rs: any) => {
-            const s = rs.skills
-            if (!s) return sum
-            const dd =
-              rs.selected_form === 'tuck' ? s.dd_tuck :
-              rs.selected_form === 'pike' ? s.dd_pike :
-              rs.selected_form === 'straight' ? s.dd_straight : null
-            return sum + (dd ?? 0)
-          }, 0)
-          const { routine_skills: _, ...routine } = r
-          return { ...routine, skill_count: skillRows.length, total_dd }
-        })
-        setRoutines(summaries)
+        setItRoutines(computeSummaries(routs.filter((r: any) => r.discipline === 'individual' || !r.discipline)))
+        setDmtRoutines(computeSummaries(routs.filter((r: any) => r.discipline === 'dmt')))
       }
     } catch {
       setFetchError('Failed to load data.')
@@ -123,19 +129,26 @@ export default function AthleteDetail() {
             onClick={() => navigate(`/athletes/${athlete.id}/routines/new`)}
             className="rounded bg-orange-500 px-3 py-1.5 text-sm font-semibold text-white hover:bg-orange-600"
           >
-            + New routine
+            + IT Routine
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate(`/athletes/${athlete.id}/dmt/new`)}
+            className="rounded bg-violet-700 px-3 py-1.5 text-sm font-semibold text-white hover:bg-violet-600"
+          >
+            + DMT Routine
           </button>
         </div>
       </div>
 
-      <h2 className="mb-3 text-sm font-bold text-violet-300">Routines</h2>
-      {routines.length === 0 ? (
-        <p className="text-sm text-violet-400">No routines yet. Create one above.</p>
+      {/* Individual Trampoline routines */}
+      <h2 className="mb-3 text-sm font-bold text-violet-300">Individual Trampoline</h2>
+      {itRoutines.length === 0 ? (
+        <p className="mb-6 text-sm text-violet-400">No IT routines yet.</p>
       ) : (
-        <>
-          {/* Mobile card list */}
+        <div className="mb-6">
           <div className="flex flex-col gap-2 md:hidden">
-            {routines.map(r => (
+            {itRoutines.map(r => (
               <button
                 key={r.id}
                 type="button"
@@ -150,8 +163,6 @@ export default function AthleteDetail() {
               </button>
             ))}
           </div>
-
-          {/* Desktop table */}
           <div className="hidden overflow-hidden rounded-lg border border-border bg-card md:block">
             <table className="w-full text-sm">
               <thead className="bg-[#1a1728] text-xs font-semibold uppercase text-violet-400">
@@ -162,7 +173,7 @@ export default function AthleteDetail() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {routines.map(r => (
+                {itRoutines.map(r => (
                   <tr
                     key={r.id}
                     onClick={() => navigate(`/athletes/${athlete.id}/routines/${r.id}`)}
@@ -173,6 +184,58 @@ export default function AthleteDetail() {
                   >
                     <td className="px-4 py-3 font-medium text-violet-100">Routine #{r.routine_number}</td>
                     <td className="px-4 py-3 text-violet-400">{r.skill_count} / 10</td>
+                    <td className="px-4 py-3 font-semibold text-orange-500">{r.total_dd.toFixed(1)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Double Mini Trampoline routines */}
+      <h2 className="mb-3 text-sm font-bold text-violet-300">Double Mini Trampoline</h2>
+      {dmtRoutines.length === 0 ? (
+        <p className="text-sm text-violet-400">No DMT routines yet.</p>
+      ) : (
+        <>
+          <div className="flex flex-col gap-2 md:hidden">
+            {dmtRoutines.map(r => (
+              <button
+                key={r.id}
+                type="button"
+                onClick={() => navigate(`/athletes/${athlete.id}/dmt/${r.id}`)}
+                className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3 text-left hover:bg-[#1a1728] focus:outline-none focus:ring-2 focus:ring-orange-500"
+              >
+                <div>
+                  <p className="font-medium text-violet-100">Routine #{r.routine_number}</p>
+                  <p className="text-xs text-violet-400">{r.skill_count} / 8 skills · 4 passes</p>
+                </div>
+                <span className="text-sm font-bold text-orange-500">DD {r.total_dd.toFixed(1)}</span>
+              </button>
+            ))}
+          </div>
+          <div className="hidden overflow-hidden rounded-lg border border-border bg-card md:block">
+            <table className="w-full text-sm">
+              <thead className="bg-[#1a1728] text-xs font-semibold uppercase text-violet-400">
+                <tr>
+                  <th className="px-4 py-3 text-left">Routine</th>
+                  <th className="px-4 py-3 text-left">Passes</th>
+                  <th className="px-4 py-3 text-left">Total DD</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {dmtRoutines.map(r => (
+                  <tr
+                    key={r.id}
+                    onClick={() => navigate(`/athletes/${athlete.id}/dmt/${r.id}`)}
+                    onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && navigate(`/athletes/${athlete.id}/dmt/${r.id}`)}
+                    tabIndex={0}
+                    role="link"
+                    className="cursor-pointer hover:bg-[#1a1728] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-orange-500"
+                  >
+                    <td className="px-4 py-3 font-medium text-violet-100">Routine #{r.routine_number}</td>
+                    <td className="px-4 py-3 text-violet-400">{Math.ceil(r.skill_count / 2)} / 4</td>
                     <td className="px-4 py-3 font-semibold text-orange-500">{r.total_dd.toFixed(1)}</td>
                   </tr>
                 ))}

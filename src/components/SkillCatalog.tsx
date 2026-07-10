@@ -6,13 +6,14 @@ import type { Skill } from '../types/database'
 interface Props {
   onAdd: (skill: Skill) => void
   full: boolean
+  discipline?: 'individual' | 'dmt'
 }
 
-export default function SkillCatalog({ onAdd, full }: Props) {
+export default function SkillCatalog({ onAdd, full, discipline = 'individual' }: Props) {
   const [direction, setDirection] = useState<DirectionFilter>('front')
   const [count, setCount] = useState<CountFilter>('all')
   const [search, setSearch] = useState('')
-  const { filtered, loading } = useSkills(direction, count, search)
+  const { filtered, loading } = useSkills(direction, count, search, discipline)
 
   return (
     <div className="flex h-full w-full flex-col border-r border-border bg-card md:w-[280px] md:min-w-[280px]">

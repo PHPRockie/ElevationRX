@@ -6,7 +6,10 @@ import type { Athlete, Routine } from '../types/database'
 import type { RoutineSlot, SkillForm } from '../lib/ddCalc'
 import { defaultForm, calculateTotalDD } from '../lib/ddCalc'
 
-const SLOT_COUNT = 10
+interface UseRoutineOptions {
+  discipline?: 'individual' | 'dmt'
+  slotCount?: number
+}
 
 interface UseRoutineResult {
   athlete: Athlete | null
@@ -24,13 +27,15 @@ interface UseRoutineResult {
   save: () => Promise<void>
 }
 
-export function useRoutine(): UseRoutineResult {
+export function useRoutine(options?: UseRoutineOptions): UseRoutineResult {
+  const discipline = options?.discipline ?? 'individual'
+  const SLOT_COUNT = options?.slotCount ?? 10
   const { athleteId, routineId } = useParams<{ athleteId: string; routineId: string }>()
   const { gym } = useCoach()
 
   const [athlete, setAthlete] = useState<Athlete | null>(null)
   const [routine, setRoutine] = useState<Routine | null>(null)
-  const [slots, setSlots] = useState<(RoutineSlot | null)[]>(Array(SLOT_COUNT).fill(null))
+  const [slots, setSlots] = useState<(RoutineSlot | null)[]>(() => Array(SLOT_COUNT).fill(null))
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [loadError, setLoadError] = useState<string | null>(null)
@@ -80,7 +85,8 @@ export function useRoutine(): UseRoutineResult {
     } finally {
       setLoading(false)
     }
-  }, [athleteId, routineId])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [athleteId, routineId, SLOT_COUNT])
 
   useEffect(() => { load() }, [load])
 
@@ -135,6 +141,7 @@ export function useRoutine(): UseRoutineResult {
           .from('routines')
           .select('id')
           .eq('athlete_id', athlete.id)
+          .eq('discipline', discipline)
         const nextNumber = (existing?.length ?? 0) + 1
 
         const { data: newRoutine, error: insertRoutineError } = await supabase
@@ -145,7 +152,7 @@ export function useRoutine(): UseRoutineResult {
             level: athlete.level,
             country: athlete.country,
             routine_number: nextNumber,
-            discipline: 'individual',
+            discipline,
           })
           .select()
           .single()

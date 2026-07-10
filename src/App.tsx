@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard'
 import AthleteList from './pages/AthleteList'
 import AthleteDetail from './pages/AthleteDetail'
 import RoutineBuilder from './pages/RoutineBuilder'
+import DmtRoutineBuilder from './pages/DmtRoutineBuilder'
 import Settings from './pages/Settings'
 import Setup from './pages/Setup'
 
@@ -33,6 +34,8 @@ export default function App() {
           <Route path="/athletes/:athleteId" element={<AthleteDetail />} />
           <Route path="/athletes/:athleteId/routines/new" element={<RoutineBuilder />} />
           <Route path="/athletes/:athleteId/routines/:routineId" element={<RoutineBuilder />} />
+          <Route path="/athletes/:athleteId/dmt/new" element={<DmtRoutineBuilder />} />
+          <Route path="/athletes/:athleteId/dmt/:routineId" element={<DmtRoutineBuilder />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
         <Route path="*" element={<Navigate to="/login" replace />} />
