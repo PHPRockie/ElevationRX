@@ -11,6 +11,7 @@ import type { Athlete, Routine } from '../types/database'
 interface RoutineSummary extends Routine {
   skill_count: number
   total_dd: number
+  pass_dds?: number[]
 }
 
 export default function AthleteDetail() {
@@ -27,20 +28,36 @@ export default function AthleteDetail() {
   const [deleteError, setDeleteError] = useState<string | null>(null)
   const [showEdit, setShowEdit] = useState(false)
 
-  function computeSummaries(routs: any[]): RoutineSummary[] {
+  function getSkillDd(rs: any): number {
+    const s = rs.skills
+    if (!s) return 0
+    const dd =
+      rs.selected_form === 'tuck' ? s.dd_tuck :
+      rs.selected_form === 'pike' ? s.dd_pike :
+      rs.selected_form === 'straight' ? s.dd_straight : null
+    return dd ?? 0
+  }
+
+  function computeSummaries(routs: any[], isDmt = false): RoutineSummary[] {
     return routs.map((r: any) => {
       const skillRows = r.routine_skills ?? []
-      const total_dd = skillRows.reduce((sum: number, rs: any) => {
-        const s = rs.skills
-        if (!s) return sum
-        const dd =
-          rs.selected_form === 'tuck' ? s.dd_tuck :
-          rs.selected_form === 'pike' ? s.dd_pike :
-          rs.selected_form === 'straight' ? s.dd_straight : null
-        return sum + (dd ?? 0)
-      }, 0)
+      const total_dd = skillRows.reduce((sum: number, rs: any) => sum + getSkillDd(rs), 0)
       const { routine_skills: _, ...routine } = r
-      return { ...routine, skill_count: skillRows.length, total_dd }
+
+      let pass_dds: number[] | undefined
+      if (isDmt) {
+        const passTotals: number[] = [0, 0, 0, 0]
+        skillRows.forEach((rs: any) => {
+          const seq = rs.sequence_order ?? 1
+          const passIdx = Math.ceil(seq / 2) - 1
+          if (passIdx >= 0 && passIdx < 4) {
+            passTotals[passIdx] += getSkillDd(rs)
+          }
+        })
+        pass_dds = passTotals
+      }
+
+      return { ...routine, skill_count: skillRows.length, total_dd, pass_dds }
     })
   }
 
@@ -56,13 +73,13 @@ export default function AthleteDetail() {
 
       const { data: routs, error: routsError } = await supabase
         .from('routines')
-        .select('*, routine_skills(selected_form, skills(dd_tuck, dd_pike, dd_straight))')
+        .select('*, routine_skills(selected_form, sequence_order, skills(dd_tuck, dd_pike, dd_straight))')
         .eq('athlete_id', athleteId)
         .order('routine_number')
 
       if (routs && !routsError) {
         setItRoutines(computeSummaries(routs.filter((r: any) => r.discipline === 'individual' || !r.discipline)))
-        setDmtRoutines(computeSummaries(routs.filter((r: any) => r.discipline === 'dmt')))
+        setDmtRoutines(computeSummaries(routs.filter((r: any) => r.discipline === 'dmt'), true))
       }
     } catch {
       setFetchError('Failed to load data.')
@@ -200,20 +217,26 @@ export default function AthleteDetail() {
       ) : (
         <>
           <div className="flex flex-col gap-2 md:hidden">
-            {dmtRoutines.map(r => (
-              <button
-                key={r.id}
-                type="button"
-                onClick={() => navigate(`/athletes/${athlete.id}/dmt/${r.id}`)}
-                className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3 text-left hover:bg-[#1a1728] focus:outline-none focus:ring-2 focus:ring-orange-500"
-              >
-                <div>
-                  <p className="font-medium text-violet-100">Routine #{r.routine_number}</p>
-                  <p className="text-xs text-violet-400">{r.skill_count} / 8 skills · 4 passes</p>
-                </div>
-                <span className="text-sm font-bold text-orange-500">DD {r.total_dd.toFixed(1)}</span>
-              </button>
-            ))}
+            {dmtRoutines.map(r => {
+              const passLabel = r.pass_dds
+                ?.map((dd, i) => dd > 0 ? `P${i + 1}: ${dd.toFixed(1)}` : null)
+                .filter(Boolean)
+                .join(' / ') ?? '—'
+              return (
+                <button
+                  key={r.id}
+                  type="button"
+                  onClick={() => navigate(`/athletes/${athlete.id}/dmt/${r.id}`)}
+                  className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3 text-left hover:bg-[#1a1728] focus:outline-none focus:ring-2 focus:ring-orange-500"
+                >
+                  <div>
+                    <p className="font-medium text-violet-100">Routine #{r.routine_number}</p>
+                    <p className="text-xs text-violet-400">{Math.ceil(r.skill_count / 2)} / 4 passes</p>
+                  </div>
+                  <span className="text-sm font-bold text-orange-500">{passLabel}</span>
+                </button>
+              )
+            })}
           </div>
           <div className="hidden overflow-hidden rounded-lg border border-border bg-card md:block">
             <table className="w-full text-sm">
@@ -221,24 +244,30 @@ export default function AthleteDetail() {
                 <tr>
                   <th className="px-4 py-3 text-left">Routine</th>
                   <th className="px-4 py-3 text-left">Passes</th>
-                  <th className="px-4 py-3 text-left">Total DD</th>
+                  <th className="px-4 py-3 text-left">DD per Pass</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {dmtRoutines.map(r => (
-                  <tr
-                    key={r.id}
-                    onClick={() => navigate(`/athletes/${athlete.id}/dmt/${r.id}`)}
-                    onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && navigate(`/athletes/${athlete.id}/dmt/${r.id}`)}
-                    tabIndex={0}
-                    role="link"
-                    className="cursor-pointer hover:bg-[#1a1728] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-orange-500"
-                  >
-                    <td className="px-4 py-3 font-medium text-violet-100">Routine #{r.routine_number}</td>
-                    <td className="px-4 py-3 text-violet-400">{Math.ceil(r.skill_count / 2)} / 4</td>
-                    <td className="px-4 py-3 font-semibold text-orange-500">{r.total_dd.toFixed(1)}</td>
-                  </tr>
-                ))}
+                {dmtRoutines.map(r => {
+                  const passLabel = r.pass_dds
+                    ?.map((dd, i) => dd > 0 ? `${dd.toFixed(1)}` : null)
+                    .filter(Boolean)
+                    .join(' / ') ?? '—'
+                  return (
+                    <tr
+                      key={r.id}
+                      onClick={() => navigate(`/athletes/${athlete.id}/dmt/${r.id}`)}
+                      onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && navigate(`/athletes/${athlete.id}/dmt/${r.id}`)}
+                      tabIndex={0}
+                      role="link"
+                      className="cursor-pointer hover:bg-[#1a1728] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-orange-500"
+                    >
+                      <td className="px-4 py-3 font-medium text-violet-100">Routine #{r.routine_number}</td>
+                      <td className="px-4 py-3 text-violet-400">{Math.ceil(r.skill_count / 2)} / 4</td>
+                      <td className="px-4 py-3 font-semibold text-orange-500">{passLabel}</td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
