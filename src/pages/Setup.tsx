@@ -1,14 +1,33 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
 import { COUNTRIES } from '../lib/countries'
 import Spinner from '../components/Spinner'
 
+const SITE_URL = (import.meta.env.VITE_APP_URL as string | undefined)?.replace(/\/$/, '') ?? window.location.origin
+
+async function createGymAndCoach(userId: string, gymName: string, country: string, fullName: string) {
+  const { data: gymData, error: gymError } = await supabase
+    .from('gyms')
+    .insert({ name: gymName, country })
+    .select('id')
+    .single()
+  if (gymError) throw gymError
+
+  const { error: coachError } = await supabase.from('coaches').insert({
+    id: userId,
+    gym_id: gymData.id,
+    full_name: fullName,
+    role: 'admin',
+  })
+  if (coachError) throw coachError
+}
+
 export default function Setup() {
-  const navigate = useNavigate()
   const { t } = useTranslation()
   const [checking, setChecking] = useState(true)
+  const [confirmationSent, setConfirmationSent] = useState(false)
+  const [completing, setCompleting] = useState(false)
 
   const [gymName, setGymName] = useState('')
   const [country, setCountry] = useState('USA')
@@ -20,16 +39,44 @@ export default function Setup() {
 
   useEffect(() => {
     let cancelled = false
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (cancelled) return
-      if (session) {
-        navigate('/dashboard', { replace: true })
+      if (!session) { setChecking(false); return }
+
+      const meta = session.user.user_metadata
+      if (meta?.pending_gym_name) {
+        // User confirmed email — check if setup already completed
+        const { data: existingCoach } = await supabase
+          .from('coaches').select('id').eq('id', session.user.id).single()
+
+        if (existingCoach) {
+          window.location.replace('/dashboard')
+          return
+        }
+
+        // Complete the gym setup now
+        if (!cancelled) setCompleting(true)
+        try {
+          await createGymAndCoach(
+            session.user.id,
+            meta.pending_gym_name,
+            meta.pending_gym_country ?? 'USA',
+            meta.full_name ?? '',
+          )
+          window.location.replace('/dashboard')
+        } catch {
+          if (!cancelled) {
+            setError('Setup could not be completed. Please try again or contact support.')
+            setChecking(false)
+            setCompleting(false)
+          }
+        }
       } else {
-        setChecking(false)
+        window.location.replace('/dashboard')
       }
     })
     return () => { cancelled = true }
-  }, [navigate])
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -40,42 +87,61 @@ export default function Setup() {
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { full_name: fullName.trim() } },
+        options: {
+          emailRedirectTo: `${SITE_URL}/setup`,
+          data: {
+            full_name: fullName.trim(),
+            pending_gym_name: gymName.trim(),
+            pending_gym_country: country,
+          },
+        },
       })
       if (signUpError) { setError(signUpError.message); return }
-      if (!authData.user || !authData.session) {
-        setError(t('setup.errorEmailConfirmation'))
-        return
-      }
+      if (!authData.user) { setError('Signup failed. Please try again.'); return }
 
-      const { data: gymData, error: gymError } = await supabase
-        .from('gyms')
-        .insert({ name: gymName.trim(), country })
-        .select('id')
-        .single()
-      if (gymError) {
-        setError(t('setup.errorGymExists'))
-        return
+      if (authData.session) {
+        // Email confirmation is off — create gym immediately
+        try {
+          await createGymAndCoach(authData.user.id, gymName.trim(), country, fullName.trim())
+          window.location.replace('/dashboard')
+        } catch (err: any) {
+          setError(err?.message ?? 'Failed to create gym. Please try again.')
+        }
+      } else {
+        // Email confirmation is on — show "check your email" screen
+        setConfirmationSent(true)
+        setEmail(email)
       }
-
-      const { error: coachError } = await supabase.from('coaches').insert({
-        id: authData.user.id,
-        gym_id: gymData.id,
-        full_name: fullName.trim(),
-        role: 'admin',
-      })
-      if (coachError) {
-        setError('Gym created but admin profile setup failed: ' + coachError.message)
-        return
-      }
-
-      navigate('/dashboard', { replace: true })
     } finally {
       setSaving(false)
     }
   }
 
-  if (checking) return <Spinner />
+  if (checking || completing) return <Spinner />
+
+  if (confirmationSent) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-surface px-4">
+        <div className="w-full max-w-md rounded-lg bg-card p-8 shadow text-center">
+          <div className="mb-4 text-5xl">📧</div>
+          <h1 className="mb-2 text-xl font-extrabold text-violet-100">Check your email</h1>
+          <p className="text-sm text-violet-400">
+            We sent a confirmation link to{' '}
+            <span className="font-semibold text-violet-200">{email}</span>.
+          </p>
+          <p className="mt-3 text-sm text-violet-400">
+            Click the link in the email and your gym will be set up automatically.
+          </p>
+          <p className="mt-6 text-xs text-violet-600">
+            Already confirmed?{' '}
+            <a href="/setup" className="text-violet-400 hover:underline">
+              Click here to finish setup
+            </a>
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-surface px-4">
