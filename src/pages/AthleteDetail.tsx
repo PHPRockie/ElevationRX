@@ -127,14 +127,14 @@ export default function AthleteDetail() {
           <button
             type="button"
             onClick={() => navigate(`/athletes/${athlete.id}/routines/new`)}
-            className="rounded bg-orange-500 px-3 py-1.5 text-sm font-semibold text-white hover:bg-orange-600"
+            className="rounded bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-blue-700"
           >
-            + IT Routine
+            + TRA Routine
           </button>
           <button
             type="button"
             onClick={() => navigate(`/athletes/${athlete.id}/dmt/new`)}
-            className="rounded bg-violet-700 px-3 py-1.5 text-sm font-semibold text-white hover:bg-violet-600"
+            className="rounded bg-emerald-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-emerald-700"
           >
             + DMT Routine
           </button>
