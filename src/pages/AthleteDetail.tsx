@@ -7,6 +7,7 @@ import { countryByCode } from '../lib/countries'
 import EditAthleteModal from '../components/EditAthleteModal'
 import Spinner from '../components/Spinner'
 import type { Athlete, Routine } from '../types/database'
+import { COMPULSORY_ROUTINES, getCompulsoryLevel } from '../lib/compulsoryRoutines'
 
 interface RoutineSummary extends Routine {
   skill_count: number
@@ -157,6 +158,38 @@ export default function AthleteDetail() {
           </button>
         </div>
       </div>
+
+      {/* Compulsory routine for levels 1–7 */}
+      {(() => {
+        const lvl = getCompulsoryLevel(athlete.level)
+        if (!lvl) return null
+        const skills = COMPULSORY_ROUTINES[lvl]
+        return (
+          <div className="mb-6">
+            <h2 className="mb-3 text-sm font-bold text-violet-300">
+              Compulsory Routine — Level {lvl}
+            </h2>
+            <div className="overflow-hidden rounded-lg border border-border bg-card">
+              {skills.map((skill, i) => (
+                <div
+                  key={i}
+                  className={`flex items-center justify-between px-4 py-2.5 text-sm ${
+                    i % 2 === 0 ? 'bg-card' : 'bg-[#1a1728]'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="w-5 flex-shrink-0 text-xs font-bold text-violet-500">{i + 1}</span>
+                    <span className="text-violet-100">{skill.name}</span>
+                  </div>
+                  {skill.fig && (
+                    <span className="font-mono text-xs text-orange-400">{skill.fig}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Individual Trampoline routines */}
       <h2 className="mb-3 text-sm font-bold text-violet-300">Individual Trampoline</h2>

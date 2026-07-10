@@ -93,8 +93,9 @@ export default function AthleteList() {
       {showAdd && (
         <AddAthleteModal
           onSave={async data => {
-            await addAthlete(data)
+            const id = await addAthlete(data)
             setShowAdd(false)
+            navigate(`/athletes/${id}`)
           }}
           onClose={() => setShowAdd(false)}
         />

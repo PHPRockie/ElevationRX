@@ -12,7 +12,7 @@ interface AthleteInput {
 interface UseAthletesResult {
   athletes: Athlete[]
   loading: boolean
-  addAthlete: (data: AthleteInput) => Promise<void>
+  addAthlete: (data: AthleteInput) => Promise<string>
   updateAthlete: (id: string, data: AthleteInput) => Promise<void>
   deleteAthlete: (id: string) => Promise<void>
   refresh: () => void
@@ -37,11 +37,16 @@ export function useAthletes(): UseAthletesResult {
 
   useEffect(() => { fetchAthletes() }, [fetchAthletes])
 
-  async function addAthlete(data: AthleteInput) {
-    if (!gym) return
-    const { error } = await supabase.from('athletes').insert({ ...data, gym_id: gym.id })
+  async function addAthlete(data: AthleteInput): Promise<string> {
+    if (!gym) throw new Error('No gym')
+    const { data: newAthlete, error } = await supabase
+      .from('athletes')
+      .insert({ ...data, gym_id: gym.id })
+      .select('id')
+      .single()
     if (error) throw error
     await fetchAthletes()
+    return newAthlete.id
   }
 
   async function updateAthlete(id: string, data: AthleteInput) {

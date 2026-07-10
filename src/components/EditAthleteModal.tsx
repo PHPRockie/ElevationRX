@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { COUNTRIES } from '../lib/countries'
+import { ATHLETE_LEVELS } from '../lib/compulsoryRoutines'
 import type { Athlete } from '../types/database'
 
 interface Props {
@@ -60,14 +61,18 @@ export default function EditAthleteModal({ athlete, onSave, onClose }: Props) {
             <label htmlFor="edit-level" className="mb-1 block text-xs font-semibold text-violet-300">
               {t('editAthleteModal.level')}
             </label>
-            <input
+            <select
               id="edit-level"
-              type="text"
-              value={level}
+              value={ATHLETE_LEVELS.some(l => l.value === level) ? level : ''}
               onChange={e => setLevel(e.target.value)}
               required
-              className="w-full rounded border border-border bg-[#1a1728] px-3 py-2 text-sm text-violet-100 placeholder-violet-600 outline-none focus:border-orange-500"
-            />
+              className="w-full rounded border border-border bg-[#1a1728] px-3 py-2 text-sm text-violet-100 outline-none focus:border-orange-500"
+            >
+              <option value="" disabled>{athlete.level}</option>
+              {ATHLETE_LEVELS.map(l => (
+                <option key={l.value} value={l.value}>{l.label}</option>
+              ))}
+            </select>
           </div>
           <div>
             <label htmlFor="edit-country" className="mb-1 block text-xs font-semibold text-violet-300">

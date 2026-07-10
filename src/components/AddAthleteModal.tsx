@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { COUNTRIES } from '../lib/countries'
+import { ATHLETE_LEVELS } from '../lib/compulsoryRoutines'
 
 interface Props {
   onSave: (data: { full_name: string; level: string; country: string }) => Promise<void>
@@ -59,15 +60,18 @@ export default function AddAthleteModal({ onSave, onClose }: Props) {
             <label htmlFor="add-level" className="mb-1 block text-xs font-semibold text-violet-300">
               {t('addAthleteModal.level')}
             </label>
-            <input
+            <select
               id="add-level"
-              type="text"
               value={level}
               onChange={e => setLevel(e.target.value)}
               required
-              className="w-full rounded border border-border bg-[#1a1728] px-3 py-2 text-sm text-violet-100 placeholder-violet-600 outline-none focus:border-orange-500"
-              placeholder={t('addAthleteModal.levelPlaceholder')}
-            />
+              className="w-full rounded border border-border bg-[#1a1728] px-3 py-2 text-sm text-violet-100 outline-none focus:border-orange-500"
+            >
+              <option value="" disabled>{t('addAthleteModal.levelPlaceholder')}</option>
+              {ATHLETE_LEVELS.map(l => (
+                <option key={l.value} value={l.value}>{l.label}</option>
+              ))}
+            </select>
           </div>
           <div>
             <label htmlFor="add-country" className="mb-1 block text-xs font-semibold text-violet-300">
