@@ -12,7 +12,7 @@ export default function ProtectedRoute({ children }: { children: ReactNode }) {
   if (authLoading || coachLoading) return <Spinner />
   if (!user) return <Navigate to="/login" replace />
   if (!coach) {
-    // If this user has pending gym setup data in their metadata, send them to /setup to complete it
+    // Pending gym setup in metadata → complete it via /setup
     if (user.user_metadata?.pending_gym_name) {
       return <Navigate to="/setup" replace />
     }
@@ -20,18 +20,23 @@ export default function ProtectedRoute({ children }: { children: ReactNode }) {
       <div className="flex h-screen items-center justify-center bg-surface">
         <div className="max-w-sm rounded-lg bg-card p-8 text-center shadow">
           <p className="mb-2 font-semibold text-violet-100">Account not linked</p>
-          <p className="text-sm text-violet-400">
-            Your account isn't linked to a gym yet — contact your admin.
+          <p className="mb-4 text-sm text-violet-400">
+            Your account isn't linked to a gym yet.
           </p>
+          <a
+            href="/setup"
+            className="block rounded bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600"
+          >
+            Set up my gym
+          </a>
           <button
             type="button"
             onClick={async () => {
-              const { error } = await supabase.auth.signOut()
-              if (error) console.error('[ProtectedRoute] sign-out failed', error)
+              await supabase.auth.signOut()
             }}
-            className="mt-4 text-sm text-orange-500 hover:underline"
+            className="mt-3 text-sm text-violet-500 hover:underline"
           >
-            Sign out and try a different account
+            Sign out and use a different account
           </button>
         </div>
       </div>

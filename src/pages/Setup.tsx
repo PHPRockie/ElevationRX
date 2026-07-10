@@ -28,6 +28,8 @@ export default function Setup() {
   const [checking, setChecking] = useState(true)
   const [confirmationSent, setConfirmationSent] = useState(false)
   const [completing, setCompleting] = useState(false)
+  // True when an existing auth user (no gym yet) is completing setup
+  const [existingAuthUser, setExistingAuthUser] = useState<string | null>(null)
 
   const [gymName, setGymName] = useState('')
   const [country, setCountry] = useState('USA')
@@ -72,7 +74,21 @@ export default function Setup() {
           }
         }
       } else {
-        window.location.replace('/dashboard')
+        // Authenticated but no pending gym metadata — check if they already have a gym
+        const { data: existingCoach } = await supabase
+          .from('coaches').select('id').eq('id', session.user.id).single()
+
+        if (existingCoach) {
+          // Already fully set up → go to dashboard
+          window.location.replace('/dashboard')
+        } else {
+          // Authenticated but no gym — let them complete setup inline
+          if (!cancelled) {
+            setExistingAuthUser(session.user.id)
+            setFullName(meta?.full_name ?? '')
+            setChecking(false)
+          }
+        }
       }
     })
     return () => { cancelled = true }
@@ -84,6 +100,17 @@ export default function Setup() {
     setError(null)
     setSaving(true)
     try {
+      // Already authenticated user (e.g. came from "Account not linked" screen)
+      if (existingAuthUser) {
+        try {
+          await createGymAndCoach(existingAuthUser, gymName.trim(), country, fullName.trim())
+          window.location.replace('/dashboard')
+        } catch (err: any) {
+          setError(err?.message ?? 'Failed to create gym. Please try again.')
+        }
+        return
+      }
+
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -146,9 +173,20 @@ export default function Setup() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-surface px-4">
       <div className="w-full max-w-md rounded-lg bg-card p-8 shadow">
-        <h1 className="mb-1 text-xl font-extrabold text-violet-100">{t('setup.title')}</h1>
-        <p className="mb-1 text-sm font-semibold text-orange-400">{t('setup.subtitle')}</p>
-        <p className="mb-6 text-xs text-violet-400">{t('setup.description')}</p>
+        <h1 className="mb-1 text-xl font-extrabold text-violet-100">
+          {existingAuthUser ? 'Complete Your Gym Setup' : t('setup.title')}
+        </h1>
+        {!existingAuthUser && (
+          <>
+            <p className="mb-1 text-sm font-semibold text-orange-400">{t('setup.subtitle')}</p>
+            <p className="mb-6 text-xs text-violet-400">{t('setup.description')}</p>
+          </>
+        )}
+        {existingAuthUser && (
+          <p className="mb-6 text-xs text-violet-400">
+            Your account is confirmed. Just fill in your gym details to finish.
+          </p>
+        )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="border-b border-border pb-4">
@@ -206,34 +244,38 @@ export default function Setup() {
                   className="w-full rounded border border-border bg-[#1a1728] px-3 py-2 text-sm text-violet-100 placeholder-violet-700 outline-none focus:border-orange-500"
                 />
               </div>
-              <div>
-                <label className="mb-1 block text-xs font-semibold text-violet-300">
-                  {t('setup.email')}
-                </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  required
-                  autoComplete="email"
-                  placeholder={t('setup.emailPlaceholder')}
-                  className="w-full rounded border border-border bg-[#1a1728] px-3 py-2 text-sm text-violet-100 placeholder-violet-700 outline-none focus:border-orange-500"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-xs font-semibold text-violet-300">
-                  {t('setup.password')}
-                </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  required
-                  minLength={6}
-                  autoComplete="new-password"
-                  className="w-full rounded border border-border bg-[#1a1728] px-3 py-2 text-sm text-violet-100 outline-none focus:border-orange-500"
-                />
-              </div>
+              {!existingAuthUser && (
+                <>
+                  <div>
+                    <label className="mb-1 block text-xs font-semibold text-violet-300">
+                      {t('setup.email')}
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                      required
+                      autoComplete="email"
+                      placeholder={t('setup.emailPlaceholder')}
+                      className="w-full rounded border border-border bg-[#1a1728] px-3 py-2 text-sm text-violet-100 placeholder-violet-700 outline-none focus:border-orange-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-semibold text-violet-300">
+                      {t('setup.password')}
+                    </label>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={e => setPassword(e.target.value)}
+                      required
+                      minLength={6}
+                      autoComplete="new-password"
+                      className="w-full rounded border border-border bg-[#1a1728] px-3 py-2 text-sm text-violet-100 outline-none focus:border-orange-500"
+                    />
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
