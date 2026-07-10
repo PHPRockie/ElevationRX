@@ -6,7 +6,7 @@ import Spinner from '../components/Spinner'
 
 const SITE_URL = (import.meta.env.VITE_APP_URL as string | undefined)?.replace(/\/$/, '') ?? window.location.origin
 
-async function createGymAndCoach(_userId: string, gymName: string, country: string, fullName: string) {
+async function createGymAndCoach(gymName: string, country: string, fullName: string) {
   const { error } = await supabase.rpc('setup_gym', {
     gym_name: gymName,
     gym_country: country,
@@ -52,7 +52,6 @@ export default function Setup() {
         if (!cancelled) setCompleting(true)
         try {
           await createGymAndCoach(
-            session.user.id,
             meta.pending_gym_name,
             meta.pending_gym_country ?? 'USA',
             meta.full_name ?? '',
@@ -95,7 +94,7 @@ export default function Setup() {
       // Already authenticated user (e.g. came from "Account not linked" screen)
       if (existingAuthUser) {
         try {
-          await createGymAndCoach(existingAuthUser, gymName.trim(), country, fullName.trim())
+          await createGymAndCoach(gymName.trim(), country, fullName.trim())
           window.location.replace('/dashboard')
         } catch (err: any) {
           setError(err?.message ?? 'Failed to create gym. Please try again.')
@@ -121,7 +120,7 @@ export default function Setup() {
       if (authData.session) {
         // Email confirmation is off — create gym immediately
         try {
-          await createGymAndCoach(authData.user.id, gymName.trim(), country, fullName.trim())
+          await createGymAndCoach(gymName.trim(), country, fullName.trim())
           window.location.replace('/dashboard')
         } catch (err: any) {
           setError(err?.message ?? 'Failed to create gym. Please try again.')

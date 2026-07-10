@@ -69,23 +69,12 @@ export default function AcceptInvite() {
         return
       }
 
-      const { error: coachError } = await supabase.from('coaches').insert({
-        id: authData.user.id,
-        gym_id: invitation.gym_id,
-        full_name: fullName.trim(),
-        role: 'coach',
+      const { error: rpcError } = await supabase.rpc('accept_invitation', {
+        invitation_token: invitation.token,
+        coach_name: fullName.trim(),
       })
-      if (coachError) {
-        setSubmitError(t('acceptInvite.errorProfileFailed'))
-        return
-      }
-
-      const { error: acceptError } = await supabase
-        .from('invitations')
-        .update({ status: 'accepted' })
-        .eq('id', invitation.id)
-      if (acceptError) {
-        setSubmitError(t('acceptInvite.errorInviteUpdate'))
+      if (rpcError) {
+        setSubmitError(rpcError.message ?? t('acceptInvite.errorProfileFailed'))
         return
       }
 

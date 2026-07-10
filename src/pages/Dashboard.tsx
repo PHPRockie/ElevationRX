@@ -22,7 +22,7 @@ export default function Dashboard() {
       </h1>
       <p className="mb-5 text-sm text-violet-400">
         {gym?.name}
-        {gym?.country ? ` · ${gym.country}` : ''}
+        {gym?.country ? ` · ${countryByCode(gym.country)?.flag ?? ''} ${countryByCode(gym.country)?.name ?? gym.country}` : ''}
       </p>
 
       <div className="mb-6 w-36 rounded-lg border border-border bg-card p-4 md:w-40">

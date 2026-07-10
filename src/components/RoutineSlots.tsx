@@ -39,7 +39,7 @@ export default function RoutineSlots({
         <div>
           <p className="text-sm font-bold text-violet-100">{athlete?.full_name ?? '—'}</p>
           <p className="text-xs text-violet-400">
-            {routine ? `Routine #${routine.routine_number}` : 'New routine'} · Individual
+            {routine ? `Routine #${routine.routine_number}` : 'New routine'} · TRA
           </p>
         </div>
         <button
