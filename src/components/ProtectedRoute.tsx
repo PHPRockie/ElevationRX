@@ -12,6 +12,10 @@ export default function ProtectedRoute({ children }: { children: ReactNode }) {
   if (authLoading || coachLoading) return <Spinner />
   if (!user) return <Navigate to="/login" replace />
   if (!coach) {
+    // If this user has pending gym setup data in their metadata, send them to /setup to complete it
+    if (user.user_metadata?.pending_gym_name) {
+      return <Navigate to="/setup" replace />
+    }
     return (
       <div className="flex h-screen items-center justify-center bg-surface">
         <div className="max-w-sm rounded-lg bg-card p-8 text-center shadow">
