@@ -6,21 +6,13 @@ import Spinner from '../components/Spinner'
 
 const SITE_URL = (import.meta.env.VITE_APP_URL as string | undefined)?.replace(/\/$/, '') ?? window.location.origin
 
-async function createGymAndCoach(userId: string, gymName: string, country: string, fullName: string) {
-  const { data: gymData, error: gymError } = await supabase
-    .from('gyms')
-    .insert({ name: gymName, country })
-    .select('id')
-    .single()
-  if (gymError) throw gymError
-
-  const { error: coachError } = await supabase.from('coaches').insert({
-    id: userId,
-    gym_id: gymData.id,
-    full_name: fullName,
-    role: 'admin',
+async function createGymAndCoach(_userId: string, gymName: string, country: string, fullName: string) {
+  const { error } = await supabase.rpc('setup_gym', {
+    gym_name: gymName,
+    gym_country: country,
+    coach_name: fullName,
   })
-  if (coachError) throw coachError
+  if (error) throw error
 }
 
 export default function Setup() {
