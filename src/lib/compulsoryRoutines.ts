@@ -90,6 +90,89 @@ export const COMPULSORY_ROUTINES: Record<number, CompulsorySkill[]> = {
   ],
 }
 
+export interface DmtCompulsorySkill {
+  name: string
+  fig?: string
+}
+
+export interface DmtCompulsoryPass {
+  routineNumber: 1 | 2
+  skills: [DmtCompulsorySkill, DmtCompulsorySkill]
+}
+
+export const DMT_COMPULSORY_ROUTINES: Record<number, DmtCompulsoryPass[]> = {
+  1: [
+    { routineNumber: 1, skills: [
+      { name: 'Spotter Tuck Jump', fig: 'o' },
+      { name: 'Dismount Tuck Jump', fig: 'o' },
+    ]},
+    { routineNumber: 2, skills: [
+      { name: 'Spotter Straddle Jump', fig: 'v' },
+      { name: 'Dismount Straddle Jump', fig: 'v' },
+    ]},
+  ],
+  2: [
+    { routineNumber: 1, skills: [
+      { name: 'Mounter Tuck Jump', fig: 'o' },
+      { name: 'Dismount Tuck Jump', fig: 'o' },
+    ]},
+    { routineNumber: 2, skills: [
+      { name: 'Spotter Straddle Jump', fig: 'v' },
+      { name: 'Dismount Pike Jump', fig: '<' },
+    ]},
+  ],
+  3: [
+    { routineNumber: 1, skills: [
+      { name: 'Mounter Straddle Jump', fig: 'v' },
+      { name: 'Dismount Pike Jump', fig: '<' },
+    ]},
+    { routineNumber: 2, skills: [
+      { name: 'Spotter Tuck Jump', fig: 'o' },
+      { name: 'Dismount Jump 1/2 Twist', fig: '01 /' },
+    ]},
+  ],
+  4: [
+    { routineNumber: 1, skills: [
+      { name: 'Mounter Tuck Jump', fig: 'o' },
+      { name: 'Dismount Front Somersault Tuck', fig: '40 o' },
+    ]},
+    { routineNumber: 2, skills: [
+      { name: 'Spotter Straddle Jump', fig: 'v' },
+      { name: 'Dismount Front Somersault Pike', fig: '40 <' },
+    ]},
+  ],
+  5: [
+    { routineNumber: 1, skills: [
+      { name: 'Mounter Straddle Jump', fig: 'v' },
+      { name: 'Dismount Barani Pike', fig: '41 <' },
+    ]},
+    { routineNumber: 2, skills: [
+      { name: 'Spotter Back Somersault Tuck', fig: '40 o' },
+      { name: 'Dismount Straddle Jump', fig: 'v' },
+    ]},
+  ],
+  6: [
+    { routineNumber: 1, skills: [
+      { name: 'Mounter Barani Tuck', fig: '41 o' },
+      { name: 'Dismount Back Somersault Tuck', fig: '40 o' },
+    ]},
+    { routineNumber: 2, skills: [
+      { name: 'Spotter Back Somersault Tuck', fig: '40 o' },
+      { name: 'Dismount Barani Tuck', fig: '41 o' },
+    ]},
+  ],
+  7: [
+    { routineNumber: 1, skills: [
+      { name: 'Mounter Barani Pike', fig: '41 <' },
+      { name: 'Dismount Back Somersault Straight', fig: '40 /' },
+    ]},
+    { routineNumber: 2, skills: [
+      { name: 'Spotter Back Somersault Pike', fig: '40 <' },
+      { name: 'Dismount Barani Straight', fig: '41 /' },
+    ]},
+  ],
+}
+
 export const ATHLETE_LEVELS = [
   { value: '1', label: 'Level 1' },
   { value: '2', label: 'Level 2' },

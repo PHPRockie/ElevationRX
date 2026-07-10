@@ -7,7 +7,7 @@ import { countryByCode } from '../lib/countries'
 import EditAthleteModal from '../components/EditAthleteModal'
 import Spinner from '../components/Spinner'
 import type { Athlete, Routine } from '../types/database'
-import { COMPULSORY_ROUTINES, getCompulsoryLevel } from '../lib/compulsoryRoutines'
+import { COMPULSORY_ROUTINES, DMT_COMPULSORY_ROUTINES, getCompulsoryLevel } from '../lib/compulsoryRoutines'
 
 interface RoutineSummary extends Routine {
   skill_count: number
@@ -242,6 +242,44 @@ export default function AthleteDetail() {
           </div>
         </div>
       )}
+
+      {/* DMT compulsory for levels 1–7 */}
+      {(() => {
+        const lvl = getCompulsoryLevel(athlete.level)
+        if (!lvl) return null
+        const passes = DMT_COMPULSORY_ROUTINES[lvl]
+        return (
+          <div className="mb-4">
+            <h2 className="mb-3 text-sm font-bold text-violet-300">
+              DMT Compulsory — Level {lvl}
+            </h2>
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+              {passes.map(pass => (
+                <div key={pass.routineNumber} className="overflow-hidden rounded-lg border border-border bg-card">
+                  <div className="border-b border-border bg-[#1a1728] px-4 py-2">
+                    <span className="text-xs font-bold uppercase tracking-wide text-emerald-400">
+                      Routine {pass.routineNumber}
+                    </span>
+                  </div>
+                  {pass.skills.map((skill, i) => (
+                    <div
+                      key={i}
+                      className={`flex items-center justify-between px-4 py-2.5 text-sm ${
+                        i % 2 === 0 ? 'bg-card' : 'bg-[#1a1728]'
+                      }`}
+                    >
+                      <span className="text-violet-100">{skill.name}</span>
+                      {skill.fig && (
+                        <span className="font-mono text-xs text-orange-400">{skill.fig}</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Double Mini Trampoline routines */}
       <h2 className="mb-3 text-sm font-bold text-violet-300">Double Mini Trampoline</h2>
