@@ -250,7 +250,7 @@ export default function AthleteDetail() {
               <tbody className="divide-y divide-border">
                 {dmtRoutines.map(r => {
                   const passLabel = r.pass_dds
-                    ?.map((dd, i) => dd > 0 ? `${dd.toFixed(1)}` : null)
+                    ?.map(dd => dd > 0 ? `${dd.toFixed(1)}` : null)
                     .filter(Boolean)
                     .join(' / ') ?? '—'
                   return (
