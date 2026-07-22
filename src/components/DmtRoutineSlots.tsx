@@ -77,21 +77,21 @@ export default function DmtRoutineSlots({
                     return (
                       <div
                         key={slotIdx}
-                        className={`flex items-center gap-2 px-3 py-2.5 ${
-                          slot ? '' : 'bg-[#1a1728]'
-                        }`}
+                        className={`px-3 py-2.5 ${slot ? '' : 'bg-[#1a1728]'}`}
                       >
-                        <span className="w-28 flex-shrink-0 text-xs text-violet-400">
-                          {SLOT_LABELS[labelIdx]}
-                        </span>
-
                         {slot ? (
                           <>
-                            <span className="flex-1 truncate text-sm font-medium text-violet-100">
-                              {slot.skill.name}
-                            </span>
-
-                            <div className="flex gap-1">
+                            {/* Row 1: label + full skill name */}
+                            <div className="flex items-baseline gap-2">
+                              <span className="w-24 flex-shrink-0 text-xs text-violet-400">
+                                {SLOT_LABELS[labelIdx]}
+                              </span>
+                              <span className="flex-1 text-sm font-medium text-violet-100 break-words">
+                                {slot.skill.name}
+                              </span>
+                            </div>
+                            {/* Row 2: form buttons + DD + remove, right-aligned */}
+                            <div className="mt-1.5 flex items-center justify-end gap-1.5">
                               {availableForms(slot.skill).map(f => (
                                 <button
                                   key={f}
@@ -106,24 +106,27 @@ export default function DmtRoutineSlots({
                                   {FORM_LABELS[f]}
                                 </button>
                               ))}
+                              <span className="w-10 text-right text-sm font-bold text-orange-500">
+                                {getSkillDD(slot).toFixed(1)}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => onRemove(slotIdx)}
+                                className="text-violet-400 hover:text-red-500"
+                                title="Remove skill"
+                                aria-label={`Remove ${slot.skill.name}`}
+                              >
+                                ✕
+                              </button>
                             </div>
-
-                            <span className="w-10 flex-shrink-0 text-right text-sm font-bold text-orange-500">
-                              {getSkillDD(slot).toFixed(1)}
-                            </span>
-
-                            <button
-                              type="button"
-                              onClick={() => onRemove(slotIdx)}
-                              className="flex-shrink-0 text-violet-400 hover:text-red-500"
-                              title="Remove skill"
-                              aria-label={`Remove ${slot.skill.name}`}
-                            >
-                              ✕
-                            </button>
                           </>
                         ) : (
-                          <span className="text-xs text-violet-500">Empty</span>
+                          <div className="flex items-center gap-2">
+                            <span className="w-24 flex-shrink-0 text-xs text-violet-400">
+                              {SLOT_LABELS[labelIdx]}
+                            </span>
+                            <span className="text-xs text-violet-500">Empty</span>
+                          </div>
                         )}
                       </div>
                     )
