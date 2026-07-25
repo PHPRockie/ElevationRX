@@ -5,6 +5,8 @@ import { supabase } from '../lib/supabase'
 import Spinner from '../components/Spinner'
 import type { Invitation } from '../types/database'
 
+const SITE_URL = (import.meta.env.VITE_APP_URL as string | undefined)?.replace(/\/$/, '') ?? window.location.origin
+
 export default function AcceptInvite() {
   const navigate = useNavigate()
   const { t } = useTranslation()
@@ -12,6 +14,8 @@ export default function AcceptInvite() {
   const [invitation, setInvitation] = useState<Invitation | null>(null)
   const [lookupLoading, setLookupLoading] = useState(true)
   const [lookupError, setLookupError] = useState<string | null>(null)
+  const [confirmationSent, setConfirmationSent] = useState(false)
+  const [completing, setCompleting] = useState(false)
 
   const [fullName, setFullName] = useState('')
   const [password, setPassword] = useState('')
@@ -20,30 +24,69 @@ export default function AcceptInvite() {
 
   useEffect(() => {
     const token = new URLSearchParams(window.location.search).get('token')
-    if (!token) {
-      setLookupError(t('acceptInvite.errorInvalid'))
-      setLookupLoading(false)
-      return
-    }
 
     let cancelled = false
-    supabase
-      .from('invitations')
-      .select('*')
-      .eq('token', token)
-      .single()
-      .then(({ data, error }) => {
-        if (cancelled) return
+
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (cancelled) return
+
+      // Post-email-confirmation redirect: session exists and we have the invite token
+      if (session && token) {
+        const { data: existingCoach } = await supabase
+          .from('coaches').select('id').eq('id', session.user.id).single()
+
+        if (existingCoach) {
+          // Already accepted — just go to dashboard
+          navigate('/dashboard', { replace: true })
+          return
+        }
+
+        // Complete the invitation now
+        setCompleting(true)
+        const savedName = session.user.user_metadata?.full_name ?? ''
+        const { error } = await supabase.rpc('accept_invitation', {
+          invitation_token: token,
+          coach_name: savedName,
+        })
+
+        if (!cancelled) {
+          if (error) {
+            setSubmitError(error.message)
+            setCompleting(false)
+            setLookupLoading(false)
+          } else {
+            navigate('/dashboard', { replace: true })
+          }
+        }
+        return
+      }
+
+      // No session — show the sign-up form
+      if (!token) {
+        setLookupError(t('acceptInvite.errorInvalid'))
         setLookupLoading(false)
-        if (error || !data) { setLookupError(t('acceptInvite.errorInvalid')); return }
-        if (data.status === 'accepted') { setLookupError(t('acceptInvite.errorAlreadyUsed')); return }
-        if (data.status === 'revoked') { setLookupError(t('acceptInvite.errorRevoked')); return }
-        if (new Date(data.expires_at) < new Date()) { setLookupError(t('acceptInvite.errorExpired')); return }
-        setInvitation(data)
-        setFullName(data.full_name)
-      })
+        return
+      }
+
+      supabase
+        .from('invitations')
+        .select('*')
+        .eq('token', token)
+        .single()
+        .then(({ data, error }) => {
+          if (cancelled) return
+          setLookupLoading(false)
+          if (error || !data) { setLookupError(t('acceptInvite.errorInvalid')); return }
+          if (data.status === 'accepted') { setLookupError(t('acceptInvite.errorAlreadyUsed')); return }
+          if (data.status === 'revoked') { setLookupError(t('acceptInvite.errorRevoked')); return }
+          if (new Date(data.expires_at) < new Date()) { setLookupError(t('acceptInvite.errorExpired')); return }
+          setInvitation(data)
+          setFullName(data.full_name)
+        })
+    })
+
     return () => { cancelled = true }
-  }, [t])
+  }, [t, navigate])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -54,8 +97,12 @@ export default function AcceptInvite() {
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email: invitation.email,
         password,
-        options: { data: { full_name: fullName.trim() } },
+        options: {
+          emailRedirectTo: `${SITE_URL}/accept?token=${invitation.token}`,
+          data: { full_name: fullName.trim() },
+        },
       })
+
       if (signUpError) {
         setSubmitError(
           signUpError.message.toLowerCase().includes('already')
@@ -64,27 +111,55 @@ export default function AcceptInvite() {
         )
         return
       }
-      if (!authData.user || !authData.session) {
-        setSubmitError(t('acceptInvite.errorEmailConfirmation'))
-        return
-      }
+      if (!authData.user) { setSubmitError('Signup failed. Please try again.'); return }
 
-      const { error: rpcError } = await supabase.rpc('accept_invitation', {
-        invitation_token: invitation.token,
-        coach_name: fullName.trim(),
-      })
-      if (rpcError) {
-        setSubmitError(rpcError.message ?? t('acceptInvite.errorProfileFailed'))
-        return
+      if (authData.session) {
+        // Email confirmation off — complete immediately
+        const { error: rpcError } = await supabase.rpc('accept_invitation', {
+          invitation_token: invitation.token,
+          coach_name: fullName.trim(),
+        })
+        if (rpcError) { setSubmitError(rpcError.message ?? t('acceptInvite.errorProfileFailed')); return }
+        navigate('/dashboard', { replace: true })
+      } else {
+        // Email confirmation on — show "check your email" screen
+        setConfirmationSent(true)
       }
-
-      navigate('/dashboard', { replace: true })
     } finally {
       setSaving(false)
     }
   }
 
-  if (lookupLoading) return <Spinner />
+  if (lookupLoading || completing) return <Spinner />
+
+  if (confirmationSent) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-surface px-4">
+        <div className="w-full max-w-md rounded-lg bg-card p-8 shadow text-center">
+          <div className="mb-4 text-5xl">📧</div>
+          <h1 className="mb-2 text-xl font-extrabold text-violet-100">Check your email</h1>
+          <p className="text-sm text-violet-400">
+            We sent a confirmation link to{' '}
+            <span className="font-semibold text-violet-200">{invitation?.email}</span>.
+          </p>
+          <p className="mt-3 text-sm text-violet-400">
+            Click the link in the email and you'll be joined to the gym automatically.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  if (submitError && !invitation) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-surface">
+        <div className="w-full max-w-sm rounded-lg bg-card p-8 text-center shadow">
+          <p className="mb-2 font-semibold text-violet-100">{t('acceptInvite.unavailableTitle')}</p>
+          <p className="text-sm text-violet-400">{submitError}</p>
+        </div>
+      </div>
+    )
+  }
 
   if (lookupError) {
     return (
