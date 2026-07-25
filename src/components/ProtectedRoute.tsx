@@ -16,7 +16,10 @@ export default function ProtectedRoute({ children }: { children: ReactNode }) {
     if (user.user_metadata?.pending_gym_name) {
       return <Navigate to="/setup" replace />
     }
-
+    // Invited coach whose email confirmation landed on the wrong page
+    if (user.user_metadata?.pending_invitation_token) {
+      return <Navigate to={`/accept?token=${user.user_metadata.pending_invitation_token}`} replace />
+    }
     return (
       <div className="flex h-screen items-center justify-center bg-surface">
         <div className="max-w-sm rounded-lg bg-card p-8 text-center shadow">

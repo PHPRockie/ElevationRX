@@ -30,8 +30,11 @@ export default function AcceptInvite() {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (cancelled) return
 
+      // Post-email-confirmation: use URL token or fall back to metadata token
+      const activeToken = token ?? session?.user.user_metadata?.pending_invitation_token ?? null
+
       // Post-email-confirmation redirect: session exists and we have the invite token
-      if (session && token) {
+      if (session && activeToken) {
         const { data: existingCoach } = await supabase
           .from('coaches').select('id').eq('id', session.user.id).single()
 
@@ -45,7 +48,7 @@ export default function AcceptInvite() {
         setCompleting(true)
         const savedName = session.user.user_metadata?.full_name ?? ''
         const { error } = await supabase.rpc('accept_invitation', {
-          invitation_token: token,
+          invitation_token: activeToken,
           coach_name: savedName,
         })
 
@@ -99,7 +102,10 @@ export default function AcceptInvite() {
         password,
         options: {
           emailRedirectTo: `${SITE_URL}/accept?token=${invitation.token}`,
-          data: { full_name: fullName.trim() },
+          data: {
+            full_name: fullName.trim(),
+            pending_invitation_token: invitation.token,
+          },
         },
       })
 
