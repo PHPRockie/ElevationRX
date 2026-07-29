@@ -18,6 +18,7 @@ export default function Settings() {
   const [coachesError, setCoachesError] = useState<string | null>(null)
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [revokeError, setRevokeError] = useState<string | null>(null)
+  const [removeError, setRemoveError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!gym) { setCoachesLoading(false); return }
@@ -47,6 +48,17 @@ export default function Settings() {
     }
   }
 
+  async function handleRemoveCoach(coachId: string, coachName: string) {
+    if (!window.confirm(`Remove ${coachName} from the team? They will lose access to the gym.`)) return
+    setRemoveError(null)
+    const { error } = await supabase.from('coaches').delete().eq('id', coachId)
+    if (error) {
+      setRemoveError('Failed to remove coach. Please try again.')
+    } else {
+      setCoaches(prev => prev.filter(c => c.id !== coachId))
+    }
+  }
+
   if (authLoading) return <Spinner />
   if (!coach || coach.role !== 'admin') return <Navigate to="/dashboard" replace />
   if (coachesLoading) return <Spinner />
@@ -71,6 +83,7 @@ export default function Settings() {
       <section className="mb-8">
         <h2 className="mb-3 text-sm font-bold text-violet-300">{t('settings.teamSection')}</h2>
         {coachesError && <p className="mb-2 text-xs text-red-500">{coachesError}</p>}
+        {removeError && <p className="mb-2 text-xs text-red-500">{removeError}</p>}
 
         {/* Mobile card list */}
         <div className="flex flex-col gap-2 md:hidden">
@@ -78,13 +91,24 @@ export default function Settings() {
             <div key={c.id} className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3">
               <div>
                 <p className="font-medium text-violet-100">{c.full_name}</p>
-                <p className="text-xs text-violet-400">{new Date(c.created_at).toLocaleDateString()}</p>
+                <p className="text-xs text-violet-400">Joined {new Date(c.created_at).toLocaleDateString()}</p>
               </div>
-              <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${
-                c.role === 'admin' ? 'bg-orange-900/40 text-orange-400' : 'bg-zinc-800 text-zinc-400'
-              }`}>
-                {c.role === 'admin' ? t('settings.roleAdmin') : t('settings.roleCoach')}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${
+                  c.role === 'admin' ? 'bg-orange-900/40 text-orange-400' : 'bg-zinc-800 text-zinc-400'
+                }`}>
+                  {c.role === 'admin' ? t('settings.roleAdmin') : t('settings.roleCoach')}
+                </span>
+                {c.id !== coach.id && (
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveCoach(c.id, c.full_name)}
+                    className="text-xs text-red-500 hover:underline"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -97,6 +121,7 @@ export default function Settings() {
                 <th className="px-4 py-3 text-left">{t('settings.colName')}</th>
                 <th className="px-4 py-3 text-left">{t('settings.colRole')}</th>
                 <th className="px-4 py-3 text-left">{t('settings.colJoined')}</th>
+                <th className="px-4 py-3 text-left"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -112,6 +137,17 @@ export default function Settings() {
                   </td>
                   <td className="px-4 py-3 text-violet-400">
                     {new Date(c.created_at).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-3">
+                    {c.id !== coach.id && (
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveCoach(c.id, c.full_name)}
+                        className="text-xs text-red-500 hover:underline"
+                      >
+                        Remove
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -138,13 +174,13 @@ export default function Settings() {
 
         {invLoading ? (
           <Spinner />
-        ) : invitations.length === 0 ? (
+        ) : invitations.filter(i => i.status !== 'revoked').length === 0 ? (
           <p className="text-sm text-violet-400">{t('settings.noInvitations')}</p>
         ) : (
           <>
             {/* Mobile card list */}
             <div className="flex flex-col gap-2 md:hidden">
-              {invitations.map(inv => (
+              {invitations.filter(i => i.status !== 'revoked').map(inv => (
                 <div
                   key={inv.id}
                   className={`rounded-lg border border-border bg-card px-4 py-3 ${inv.status !== 'pending' ? 'opacity-50' : ''}`}
@@ -185,7 +221,7 @@ export default function Settings() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {invitations.map(inv => (
+                  {invitations.filter(i => i.status !== 'revoked').map(inv => (
                     <tr key={inv.id} className={inv.status !== 'pending' ? 'opacity-50' : ''}>
                       <td className="px-4 py-3 text-violet-300">{inv.email}</td>
                       <td className="px-4 py-3 text-violet-300">{inv.full_name}</td>
