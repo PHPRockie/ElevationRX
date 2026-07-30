@@ -1,5 +1,6 @@
 import type { RoutineSlot, SkillForm } from '../lib/ddCalc'
 import { availableForms, getSkillDD } from '../lib/ddCalc'
+import { useAnimatedNumber } from '../hooks/useAnimatedNumber'
 import type { Athlete, Routine } from '../types/database'
 
 interface Props {
@@ -32,6 +33,7 @@ export default function DmtRoutineSlots({
   onSave,
 }: Props) {
   const filledCount = slots.filter(Boolean).length
+  const animatedDD = useAnimatedNumber(totalDD)
   const passes = [0, 1, 2, 3]
 
   return (
@@ -140,7 +142,7 @@ export default function DmtRoutineSlots({
 
       <div className="flex flex-shrink-0 items-center justify-between border-t border-border bg-card px-4 py-3">
         <span className="text-xs text-violet-400">{filledCount} / 8 skills added</span>
-        <span className="text-sm font-bold text-orange-500">DD {totalDD.toFixed(1)}</span>
+        <span className="text-sm font-bold text-orange-500">DD {animatedDD.toFixed(1)}</span>
       </div>
     </div>
   )

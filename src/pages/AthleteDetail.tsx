@@ -14,6 +14,7 @@ interface RoutineSummary extends Routine {
   skill_count: number
   total_dd: number
   pass_dds?: number[]
+  skillNames: string[]
 }
 
 export default function AthleteDetail() {
@@ -29,6 +30,9 @@ export default function AthleteDetail() {
   const [loading, setLoading] = useState(true)
   const [fetchError, setFetchError] = useState<string | null>(null)
   const [showEdit, setShowEdit] = useState(false)
+  const [compareA, setCompareA] = useState<string>('')
+  const [compareB, setCompareB] = useState<string>('')
+  const [showCompare, setShowCompare] = useState(false)
 
   function getSkillDd(rs: any): number {
     const s = rs.skills
@@ -45,6 +49,7 @@ export default function AthleteDetail() {
       const skillRows = r.routine_skills ?? []
       const total_dd = skillRows.reduce((sum: number, rs: any) => sum + getSkillDd(rs), 0)
       const { routine_skills: _, ...routine } = r
+      const skillNames: string[] = skillRows.map((rs: any) => rs.skills?.name ?? '').filter(Boolean)
 
       let pass_dds: number[] | undefined
       if (isDmt) {
@@ -59,7 +64,7 @@ export default function AthleteDetail() {
         pass_dds = passTotals
       }
 
-      return { ...routine, skill_count: skillRows.length, total_dd, pass_dds }
+      return { ...routine, skill_count: skillRows.length, total_dd, pass_dds, skillNames }
     })
   }
 
@@ -75,7 +80,7 @@ export default function AthleteDetail() {
 
       const { data: routs, error: routsError } = await supabase
         .from('routines')
-        .select('*, routine_skills(selected_form, sequence_order, skills(dd_tuck, dd_pike, dd_straight))')
+        .select('*, routine_skills(selected_form, sequence_order, skills(name, dd_tuck, dd_pike, dd_straight))')
         .eq('athlete_id', athleteId)
         .order('routine_number')
 
@@ -395,6 +400,104 @@ export default function AthleteDetail() {
             </table>
           </div>
         </>
+      )}
+
+      {/* DD Bar Chart — appears when athlete has 2+ IT routines */}
+      {itRoutines.length >= 2 && (() => {
+        const maxDD = Math.max(...itRoutines.map(r => r.total_dd), 1)
+        return (
+          <div className="mb-6">
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="text-sm font-bold text-violet-300">TRA Routine DD Comparison</h2>
+            </div>
+            <div className="rounded-lg border border-border bg-card p-4">
+              <div className="flex items-end gap-3">
+                {itRoutines.map(r => (
+                  <div key={r.id} className="flex flex-1 flex-col items-center gap-1">
+                    <span className="text-xs font-bold text-orange-500">{r.total_dd.toFixed(1)}</span>
+                    <div
+                      className="w-full rounded-t bg-orange-500/30 border-t-2 border-orange-500 transition-all"
+                      style={{ height: `${Math.max((r.total_dd / maxDD) * 80, 8)}px` }}
+                    />
+                    <span className="text-xs text-violet-400">#{r.routine_number}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )
+      })()}
+
+      {/* Routine Comparison — appears when athlete has 2+ IT routines */}
+      {itRoutines.length >= 2 && (
+        <div className="mb-6">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-sm font-bold text-violet-300">Compare TRA Routines</h2>
+            <button
+              type="button"
+              onClick={() => {
+                setShowCompare(v => !v)
+                if (!compareA && itRoutines[0]) setCompareA(itRoutines[0].id)
+                if (!compareB && itRoutines[1]) setCompareB(itRoutines[1].id)
+              }}
+              className="rounded border border-border px-2 py-1 text-xs text-violet-400 hover:bg-[#1a1728]"
+            >
+              {showCompare ? 'Hide' : 'Show comparison'}
+            </button>
+          </div>
+          {showCompare && (() => {
+            const rA = itRoutines.find(r => r.id === (compareA || itRoutines[0]?.id))
+            const rB = itRoutines.find(r => r.id === (compareB || itRoutines[1]?.id))
+            if (!rA || !rB) return null
+            const maxLen = Math.max(rA.skillNames.length, rB.skillNames.length)
+            return (
+              <div className="overflow-hidden rounded-lg border border-border bg-card">
+                {/* selectors */}
+                <div className="grid grid-cols-2 gap-px border-b border-border bg-border">
+                  <div className="bg-card px-3 py-2">
+                    <select
+                      value={compareA}
+                      onChange={e => setCompareA(e.target.value)}
+                      className="w-full bg-transparent text-xs font-bold text-orange-400 outline-none"
+                    >
+                      {itRoutines.map(r => <option key={r.id} value={r.id}>Routine #{r.routine_number} · DD {r.total_dd.toFixed(1)}</option>)}
+                    </select>
+                  </div>
+                  <div className="bg-card px-3 py-2">
+                    <select
+                      value={compareB}
+                      onChange={e => setCompareB(e.target.value)}
+                      className="w-full bg-transparent text-xs font-bold text-violet-400 outline-none"
+                    >
+                      {itRoutines.map(r => <option key={r.id} value={r.id}>Routine #{r.routine_number} · DD {r.total_dd.toFixed(1)}</option>)}
+                    </select>
+                  </div>
+                </div>
+                {/* skill rows */}
+                {Array.from({ length: maxLen }).map((_, i) => {
+                  const a = rA.skillNames[i] ?? '—'
+                  const b = rB.skillNames[i] ?? '—'
+                  const same = a === b && a !== '—'
+                  return (
+                    <div key={i} className={`grid grid-cols-2 gap-px border-b border-border bg-border last:border-0 ${i % 2 === 0 ? '' : ''}`}>
+                      <div className={`bg-card px-3 py-2 text-xs ${same ? 'text-violet-300' : 'text-orange-400'}`}>
+                        <span className="mr-1.5 text-violet-600">{i + 1}</span>{a}
+                      </div>
+                      <div className={`bg-card px-3 py-2 text-xs ${same ? 'text-violet-300' : 'text-violet-400'}`}>
+                        {b}
+                      </div>
+                    </div>
+                  )
+                })}
+                {/* totals */}
+                <div className="grid grid-cols-2 gap-px bg-border">
+                  <div className="bg-[#1a1728] px-3 py-2 text-xs font-bold text-orange-500">Total DD {rA.total_dd.toFixed(1)}</div>
+                  <div className="bg-[#1a1728] px-3 py-2 text-xs font-bold text-violet-400">Total DD {rB.total_dd.toFixed(1)}</div>
+                </div>
+              </div>
+            )
+          })()}
+        </div>
       )}
 
       {showEdit && (

@@ -1,5 +1,7 @@
+import { useRef, useState } from 'react'
 import type { RoutineSlot, SkillForm } from '../lib/ddCalc'
 import { availableForms, getSkillDD } from '../lib/ddCalc'
+import { useAnimatedNumber } from '../hooks/useAnimatedNumber'
 import type { Athlete, Routine } from '../types/database'
 
 interface Props {
@@ -32,6 +34,11 @@ export default function RoutineSlots({
   onSave,
 }: Props) {
   const filledCount = slots.filter(Boolean).length
+  const animatedDD = useAnimatedNumber(totalDD)
+
+  // drag-and-drop state
+  const dragIdx = useRef<number | null>(null)
+  const [dragOver, setDragOver] = useState<number | null>(null)
 
   return (
     <div className="flex h-full flex-1 flex-col overflow-hidden">
@@ -57,10 +64,32 @@ export default function RoutineSlots({
           {slots.map((slot, i) => (
             <div
               key={i}
-              className={`flex items-center gap-2 rounded-lg border px-3 py-2 ${
-                slot ? 'border-border bg-card' : 'border-dashed border-border bg-[#1a1728]'
+              draggable={!!slot}
+              onDragStart={() => { dragIdx.current = i }}
+              onDragOver={e => { e.preventDefault(); setDragOver(i) }}
+              onDragLeave={() => setDragOver(null)}
+              onDrop={e => {
+                e.preventDefault()
+                setDragOver(null)
+                if (dragIdx.current !== null && dragIdx.current !== i) {
+                  onMove(dragIdx.current, i)
+                  dragIdx.current = null
+                }
+              }}
+              onDragEnd={() => { dragIdx.current = null; setDragOver(null) }}
+              className={`flex items-center gap-2 rounded-lg border px-3 py-2 transition-colors ${
+                dragOver === i
+                  ? 'border-orange-500 bg-orange-500/10'
+                  : slot
+                  ? 'border-border bg-card'
+                  : 'border-dashed border-border bg-[#1a1728]'
               }`}
             >
+              {slot ? (
+                <span className="flex-shrink-0 cursor-grab select-none text-sm text-violet-600 active:cursor-grabbing">
+                  ⠿
+                </span>
+              ) : null}
               <span className="w-5 flex-shrink-0 text-xs font-bold text-violet-400">{i + 1}</span>
 
               {slot ? (
@@ -90,29 +119,6 @@ export default function RoutineSlots({
                     {getSkillDD(slot).toFixed(1)}
                   </span>
 
-                  <div className="flex flex-col gap-0.5">
-                    <button
-                      type="button"
-                      onClick={() => onMove(i, i - 1)}
-                      disabled={i === 0}
-                      className="text-xs leading-none text-violet-400 hover:text-violet-100 disabled:opacity-30"
-                      title="Move up"
-                      aria-label="Move skill up"
-                    >
-                      ▲
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onMove(i, i + 1)}
-                      disabled={i === slots.length - 1}
-                      className="text-xs leading-none text-violet-400 hover:text-violet-100 disabled:opacity-30"
-                      title="Move down"
-                      aria-label="Move skill down"
-                    >
-                      ▼
-                    </button>
-                  </div>
-
                   <button
                     type="button"
                     onClick={() => onRemove(i)}
@@ -133,7 +139,7 @@ export default function RoutineSlots({
 
       <div className="flex flex-shrink-0 items-center justify-between border-t border-border bg-card px-4 py-3">
         <span className="text-xs text-violet-400">{filledCount} / 10 skills added</span>
-        <span className="text-sm font-bold text-orange-500">DD {totalDD.toFixed(1)}</span>
+        <span className="text-sm font-bold text-orange-500">DD {animatedDD.toFixed(1)}</span>
       </div>
     </div>
   )
