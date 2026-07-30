@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useAthletes } from '../hooks/useAthletes'
 import { countryByCode } from '../lib/countries'
 import AddAthleteModal from '../components/AddAthleteModal'
-import Spinner from '../components/Spinner'
+import { AthleteListSkeleton } from '../components/Skeleton'
 
 export default function AthleteList() {
   const navigate = useNavigate()
@@ -12,7 +12,14 @@ export default function AthleteList() {
   const { t } = useTranslation()
   const [showAdd, setShowAdd] = useState(false)
 
-  if (loading) return <Spinner />
+  if (loading) return (
+    <div className="p-4 md:p-6">
+      <div className="mb-4 flex items-center justify-between">
+        <h1 className="text-lg font-bold text-violet-100">{t('athletes.title')}</h1>
+      </div>
+      <AthleteListSkeleton />
+    </div>
+  )
 
   return (
     <div className="h-full overflow-auto p-4 md:p-6">

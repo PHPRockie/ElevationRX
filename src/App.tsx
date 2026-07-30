@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth'
 import { CoachProvider } from './contexts/CoachContext'
+import { ToastProvider } from './contexts/ToastContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import AppLayout from './components/AppLayout'
 import Login from './pages/Login'
@@ -17,6 +18,7 @@ export default function App() {
   const { session } = useAuth()
 
   return (
+    <ToastProvider>
     <CoachProvider session={session}>
       <Routes>
         <Route path="/login" element={<Login />} />
@@ -41,5 +43,6 @@ export default function App() {
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </CoachProvider>
+    </ToastProvider>
   )
 }

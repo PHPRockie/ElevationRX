@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useRoutine } from '../hooks/useRoutine'
+import { useToast } from '../contexts/ToastContext'
 import SkillCatalog from '../components/SkillCatalog'
 import RoutineSlots from '../components/RoutineSlots'
 import Spinner from '../components/Spinner'
@@ -9,6 +10,7 @@ type MobileTab = 'catalog' | 'routine'
 
 export default function RoutineBuilder() {
   const navigate = useNavigate()
+  const toast = useToast()
   const [mobileTab, setMobileTab] = useState<MobileTab>('catalog')
   const {
     athlete,
@@ -35,9 +37,10 @@ export default function RoutineBuilder() {
   async function handleSave() {
     try {
       await save()
+      toast.success('Routine saved')
       if (athlete) navigate(`/athletes/${athlete.id}`)
     } catch {
-      // save() already set saveError state — stay on page so user can retry
+      toast.error(saveError ?? 'Failed to save routine')
     }
   }
 

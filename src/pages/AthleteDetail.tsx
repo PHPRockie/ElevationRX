@@ -4,8 +4,9 @@ import { supabase } from '../lib/supabase'
 import { useCoach } from '../contexts/CoachContext'
 import { useAthletes } from '../hooks/useAthletes'
 import { countryByCode } from '../lib/countries'
+import { useToast } from '../contexts/ToastContext'
 import EditAthleteModal from '../components/EditAthleteModal'
-import Spinner from '../components/Spinner'
+import { AthleteDetailSkeleton } from '../components/Skeleton'
 import type { Athlete, Routine } from '../types/database'
 import { COMPULSORY_ROUTINES, DMT_COMPULSORY_ROUTINES, getCompulsoryLevel } from '../lib/compulsoryRoutines'
 
@@ -20,13 +21,13 @@ export default function AthleteDetail() {
   const navigate = useNavigate()
   const { gym } = useCoach()
   const { updateAthlete, deleteAthlete } = useAthletes()
+  const toast = useToast()
 
   const [athlete, setAthlete] = useState<Athlete | null>(null)
   const [itRoutines, setItRoutines] = useState<RoutineSummary[]>([])
   const [dmtRoutines, setDmtRoutines] = useState<RoutineSummary[]>([])
   const [loading, setLoading] = useState(true)
   const [fetchError, setFetchError] = useState<string | null>(null)
-  const [deleteError, setDeleteError] = useState<string | null>(null)
   const [showEdit, setShowEdit] = useState(false)
 
   function getSkillDd(rs: any): number {
@@ -94,27 +95,31 @@ export default function AthleteDetail() {
   async function handleDelete() {
     if (!athlete) return
     if (!window.confirm(`Delete ${athlete.full_name}? This cannot be undone.`)) return
-    setDeleteError(null)
     try {
       await deleteAthlete(athlete.id)
       navigate('/athletes')
     } catch {
-      setDeleteError('Failed to delete athlete. Please try again.')
+      toast.error('Failed to delete athlete. Please try again.')
     }
   }
 
   async function handleDeleteRoutine(routineId: string, label: string, isDmt: boolean) {
     if (!window.confirm(`Delete ${label}? This cannot be undone.`)) return
-    await supabase.from('routine_skills').delete().eq('routine_id', routineId)
-    await supabase.from('routines').delete().eq('id', routineId)
+    const { error } = await supabase.from('routine_skills').delete().eq('routine_id', routineId)
+    if (!error) await supabase.from('routines').delete().eq('id', routineId)
+    if (error) {
+      toast.error('Failed to delete routine.')
+      return
+    }
     if (isDmt) {
       setDmtRoutines(prev => prev.filter(r => r.id !== routineId))
     } else {
       setItRoutines(prev => prev.filter(r => r.id !== routineId))
     }
+    toast.success(`${label} deleted`)
   }
 
-  if (loading) return <Spinner />
+  if (loading) return <AthleteDetailSkeleton />
   if (fetchError) return <div className="p-6 text-sm text-red-500">{fetchError}</div>
   if (!athlete) return <div className="p-6 text-sm text-violet-400">Athlete not found.</div>
 
@@ -125,8 +130,6 @@ export default function AthleteDetail() {
       <Link to="/athletes" className="mb-4 inline-flex items-center gap-1 text-sm text-orange-500 hover:underline">
         ← Athletes
       </Link>
-
-      {deleteError && <p className="mb-4 text-xs text-red-500">{deleteError}</p>}
 
       {/* Header — stacks on mobile, side-by-side on desktop */}
       <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">

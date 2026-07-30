@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
 import { useCoach } from '../contexts/CoachContext'
 import { useInvitations } from '../hooks/useInvitations'
+import { useToast } from '../contexts/ToastContext'
 import InviteCoachModal from '../components/InviteCoachModal'
 import Spinner from '../components/Spinner'
 import type { Coach } from '../types/database'
@@ -12,13 +13,12 @@ export default function Settings() {
   const { coach, gym, loading: authLoading } = useCoach()
   const { invitations, loading: invLoading, error: invError, createInvitation, revokeInvitation } = useInvitations()
   const { t } = useTranslation()
+  const toast = useToast()
 
   const [coaches, setCoaches] = useState<Coach[]>([])
   const [coachesLoading, setCoachesLoading] = useState(true)
   const [coachesError, setCoachesError] = useState<string | null>(null)
   const [showInviteModal, setShowInviteModal] = useState(false)
-  const [revokeError, setRevokeError] = useState<string | null>(null)
-  const [removeError, setRemoveError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!gym) { setCoachesLoading(false); return }
@@ -40,22 +40,22 @@ export default function Settings() {
   }, [gym, t])
 
   async function handleRevoke(id: string) {
-    setRevokeError(null)
     try {
       await revokeInvitation(id)
+      toast.success('Invitation revoked')
     } catch {
-      setRevokeError(t('settings.errorRevoke'))
+      toast.error(t('settings.errorRevoke'))
     }
   }
 
   async function handleRemoveCoach(coachId: string, coachName: string) {
     if (!window.confirm(`Remove ${coachName} from the team? They will lose access to the gym.`)) return
-    setRemoveError(null)
     const { error } = await supabase.from('coaches').delete().eq('id', coachId)
     if (error) {
-      setRemoveError('Failed to remove coach. Please try again.')
+      toast.error('Failed to remove coach. Please try again.')
     } else {
       setCoaches(prev => prev.filter(c => c.id !== coachId))
+      toast.success(`${coachName} removed from the team`)
     }
   }
 
@@ -83,7 +83,6 @@ export default function Settings() {
       <section className="mb-8">
         <h2 className="mb-3 text-sm font-bold text-violet-300">{t('settings.teamSection')}</h2>
         {coachesError && <p className="mb-2 text-xs text-red-500">{coachesError}</p>}
-        {removeError && <p className="mb-2 text-xs text-red-500">{removeError}</p>}
 
         {/* Mobile card list */}
         <div className="flex flex-col gap-2 md:hidden">
@@ -169,7 +168,6 @@ export default function Settings() {
           </button>
         </div>
 
-        {revokeError && <p className="mb-2 text-xs text-red-500">{revokeError}</p>}
         {invError && <p className="mb-2 text-xs text-red-500">{invError}</p>}
 
         {invLoading ? (
