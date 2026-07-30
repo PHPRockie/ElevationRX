@@ -103,6 +103,17 @@ export default function AthleteDetail() {
     }
   }
 
+  async function handleDeleteRoutine(routineId: string, label: string, isDmt: boolean) {
+    if (!window.confirm(`Delete ${label}? This cannot be undone.`)) return
+    await supabase.from('routine_skills').delete().eq('routine_id', routineId)
+    await supabase.from('routines').delete().eq('id', routineId)
+    if (isDmt) {
+      setDmtRoutines(prev => prev.filter(r => r.id !== routineId))
+    } else {
+      setItRoutines(prev => prev.filter(r => r.id !== routineId))
+    }
+  }
+
   if (loading) return <Spinner />
   if (fetchError) return <div className="p-6 text-sm text-red-500">{fetchError}</div>
   if (!athlete) return <div className="p-6 text-sm text-violet-400">Athlete not found.</div>
@@ -199,18 +210,27 @@ export default function AthleteDetail() {
         <div className="mb-6">
           <div className="flex flex-col gap-2 md:hidden">
             {itRoutines.map(r => (
-              <button
-                key={r.id}
-                type="button"
-                onClick={() => navigate(`/athletes/${athlete.id}/routines/${r.id}`)}
-                className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3 text-left hover:bg-[#1a1728] focus:outline-none focus:ring-2 focus:ring-orange-500"
-              >
-                <div>
-                  <p className="font-medium text-violet-100">Routine #{r.routine_number}</p>
-                  <p className="text-xs text-violet-400">{r.skill_count} / 10 skills</p>
-                </div>
-                <span className="text-sm font-bold text-orange-500">DD {r.total_dd.toFixed(1)}</span>
-              </button>
+              <div key={r.id} className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-3">
+                <button
+                  type="button"
+                  onClick={() => navigate(`/athletes/${athlete.id}/routines/${r.id}`)}
+                  className="flex flex-1 items-center justify-between text-left focus:outline-none"
+                >
+                  <div>
+                    <p className="font-medium text-violet-100">Routine #{r.routine_number}</p>
+                    <p className="text-xs text-violet-400">{r.skill_count} / 10 skills</p>
+                  </div>
+                  <span className="text-sm font-bold text-orange-500">DD {r.total_dd.toFixed(1)}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteRoutine(r.id, `Routine #${r.routine_number}`, false)}
+                  className="ml-2 text-xs text-red-500 hover:text-red-400"
+                  aria-label={`Delete Routine #${r.routine_number}`}
+                >
+                  ✕
+                </button>
+              </div>
             ))}
           </div>
           <div className="hidden overflow-hidden rounded-lg border border-border bg-card md:block">
@@ -220,6 +240,7 @@ export default function AthleteDetail() {
                   <th className="px-4 py-3 text-left">Routine</th>
                   <th className="px-4 py-3 text-left">Skills</th>
                   <th className="px-4 py-3 text-left">Total DD</th>
+                  <th className="px-4 py-3 text-left"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -235,6 +256,15 @@ export default function AthleteDetail() {
                     <td className="px-4 py-3 font-medium text-violet-100">Routine #{r.routine_number}</td>
                     <td className="px-4 py-3 text-violet-400">{r.skill_count} / 10</td>
                     <td className="px-4 py-3 font-semibold text-orange-500">{r.total_dd.toFixed(1)}</td>
+                    <td className="px-4 py-3 text-right">
+                      <button
+                        type="button"
+                        onClick={e => { e.stopPropagation(); handleDeleteRoutine(r.id, `Routine #${r.routine_number}`, false) }}
+                        className="text-xs text-red-500 hover:underline"
+                      >
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -294,18 +324,27 @@ export default function AthleteDetail() {
                 .filter(Boolean)
                 .join(' / ') ?? '—'
               return (
-                <button
-                  key={r.id}
-                  type="button"
-                  onClick={() => navigate(`/athletes/${athlete.id}/dmt/${r.id}`)}
-                  className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3 text-left hover:bg-[#1a1728] focus:outline-none focus:ring-2 focus:ring-orange-500"
-                >
-                  <div>
-                    <p className="font-medium text-violet-100">Routine #{r.routine_number}</p>
-                    <p className="text-xs text-violet-400">{Math.ceil(r.skill_count / 2)} / 4 passes</p>
-                  </div>
-                  <span className="text-sm font-bold text-orange-500">{passLabel}</span>
-                </button>
+                <div key={r.id} className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-3">
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/athletes/${athlete.id}/dmt/${r.id}`)}
+                    className="flex flex-1 items-center justify-between text-left focus:outline-none"
+                  >
+                    <div>
+                      <p className="font-medium text-violet-100">Routine #{r.routine_number}</p>
+                      <p className="text-xs text-violet-400">{Math.ceil(r.skill_count / 2)} / 4 passes</p>
+                    </div>
+                    <span className="text-sm font-bold text-orange-500">{passLabel}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteRoutine(r.id, `Routine #${r.routine_number}`, true)}
+                    className="ml-2 text-xs text-red-500 hover:text-red-400"
+                    aria-label={`Delete Routine #${r.routine_number}`}
+                  >
+                    ✕
+                  </button>
+                </div>
               )
             })}
           </div>
@@ -316,6 +355,7 @@ export default function AthleteDetail() {
                   <th className="px-4 py-3 text-left">Routine</th>
                   <th className="px-4 py-3 text-left">Passes</th>
                   <th className="px-4 py-3 text-left">DD per Pass</th>
+                  <th className="px-4 py-3 text-left"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -336,6 +376,15 @@ export default function AthleteDetail() {
                       <td className="px-4 py-3 font-medium text-violet-100">Routine #{r.routine_number}</td>
                       <td className="px-4 py-3 text-violet-400">{Math.ceil(r.skill_count / 2)} / 4</td>
                       <td className="px-4 py-3 font-semibold text-orange-500">{passLabel}</td>
+                      <td className="px-4 py-3 text-right">
+                        <button
+                          type="button"
+                          onClick={e => { e.stopPropagation(); handleDeleteRoutine(r.id, `Routine #${r.routine_number}`, true) }}
+                          className="text-xs text-red-500 hover:underline"
+                        >
+                          Delete
+                        </button>
+                      </td>
                     </tr>
                   )
                 })}
